@@ -1,0 +1,51 @@
+services:
+  app:
+    build:
+      context: .
+    ports:
+      - "8080:3000"
+    volumes:
+      - ./app:/app
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+    command: >
+      sh -c 'python3 main.py'
+    networks:
+      - pizza_network
+
+  db:
+    image: postgres:18-alpine3.22
+    env_file:
+      - .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - dev-db-data:/var/lib/postgresql/data
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        compress: "true"
+    networks:
+      - pizza_network
+
+volumes:
+  dev-db-data:
+
+networks:
+  pizza_network:
+    name: pizza_network
