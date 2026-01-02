@@ -43,8 +43,35 @@ services:
     networks:
       - pizza_network
 
+  redis:
+    image: redis:8.4-alpine
+    container_name: redis
+    env_file:
+      - .env
+    volumes:
+      - redis-data:/data
+    restart: unless-stopped
+    ports:
+      - "${REDIS_PORT}:6379"
+    command: [ "redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}" ]
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "PING" ]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+        compress: "true"
+    networks:
+      - pizza_network
+
 volumes:
   dev-db-data:
+  redis-data:
 
 networks:
   pizza_network:
