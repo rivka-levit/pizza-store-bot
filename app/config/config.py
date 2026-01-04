@@ -50,7 +50,7 @@ class Config:
 
 
 def load_config(path: str | None = None) -> Config:
-    if not os.path.exists(path):
+    if not path or not os.path.exists(path):
         logger.warning(".env file not found at '%s', skipping...", path)
         load_dotenv()
     else:
