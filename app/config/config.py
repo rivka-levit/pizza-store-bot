@@ -5,7 +5,7 @@ import sys
 from dataclasses import dataclass
 from io import TextIOWrapper
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 
 
 logger = logging.getLogger(__name__)
@@ -52,10 +52,10 @@ class Config:
 def load_config(path: str | None = None) -> Config:
     if not path or not os.path.exists(path):
         logger.warning(".env file not found at '%s', skipping...", path)
-        load_dotenv()
+        load_dotenv(find_dotenv())
     else:
         logger.info("Loading .env from '%s'", path)
-        load_dotenv(dotenv_path=path)
+        load_dotenv(find_dotenv(filename=path))
 
     token = os.environ.get('BOT_TOKEN')
     if not token:
