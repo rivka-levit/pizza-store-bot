@@ -33,6 +33,7 @@ async def main():
         )
     )
 
+
     # Initialize the bot
     bot = Bot(
         token=config.bot.token,
@@ -46,7 +47,10 @@ async def main():
     # Run polling
     try:
         await bot.delete_webhook(drop_pending_updates=True)
-        await dp.start_polling(bot)
+        await dp.start_polling(
+            bot,
+            allowed_updates=config.bot.allowed_updates,
+        )
     except Exception as e:
         logger.exception(e)
 

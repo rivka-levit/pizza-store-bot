@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class BotConfig:
     token: str
+    allowed_updates: list[str]
 
 
 @dataclass
@@ -62,6 +63,11 @@ def load_config(path: str | None = None) -> Config:
         logger.error('`BOT_TOKEN` value is empty in .env file')
         raise ValueError('BOT_TOKEN must not be empty')
 
+    bot = BotConfig(
+        token=token,
+        allowed_updates=os.environ.get('ALLOWED_UPDATES').split(',')
+    )
+
     db = DatabaseConfig(
         name=os.environ.get('POSTGRES_DB'),
         host=os.environ.get('POSTGRES_HOST'),
@@ -87,7 +93,7 @@ def load_config(path: str | None = None) -> Config:
     logger.info('Configuration loaded successfully')
 
     return Config(
-        bot=BotConfig(token=token),
+        bot=bot,
         db=db,
         redis=redis,
         log=log_settings
