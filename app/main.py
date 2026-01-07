@@ -10,6 +10,7 @@ from config import Config, load_config
 from redis.asyncio import Redis  # noqa
 
 from handlers.other import router as other_router
+from handlers.user_private import router as user_private_router
 
 logger = logging.getLogger(__name__)
 
@@ -42,7 +43,7 @@ async def main():
     dp = Dispatcher(storage=storage)
 
     # Register routers
-    dp.include_routers(other_router)
+    dp.include_routers(user_private_router, other_router)
 
     # Run polling
     try:
