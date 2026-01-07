@@ -11,6 +11,7 @@ from redis.asyncio import Redis  # noqa
 
 from handlers.other import router as other_router
 from handlers.user_private import router as user_private_router
+from i18n.translator import get_translations
 
 logger = logging.getLogger(__name__)
 
@@ -45,12 +46,18 @@ async def main():
     # Register routers
     dp.include_routers(user_private_router, other_router)
 
+    # Translations
+    translations = get_translations()
+    locales = list(translations.keys())
+
     # Run polling
     try:
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(
             bot,
             allowed_updates=config.bot.allowed_updates,
+            translations=translations,
+            locales=locales,
         )
     except Exception as e:
         logger.exception(e)
