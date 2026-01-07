@@ -6,10 +6,15 @@ router = Router()
 
 
 @router.message(CommandStart())
-async def start_cmd(message: Message):
-    await message.answer(text='Привет, я виртуальный помощник.')
+async def start_cmd(message: Message, i18n: dict[str, str]):
+    await message.answer(text=i18n['/start'])
 
 
-@router.message(Command('start'))
-async def menu_cmd(message: Message):
-    await message.answer(text='Вот меню:')
+@router.message(Command('help'))
+async def help_cmd(message: Message, i18n: dict[str, str]):
+    await message.answer(text=i18n['/help'])
+
+
+@router.message(Command('menu'))
+async def menu_cmd(message: Message, i18n: dict[str, str]):
+    await message.answer(text=i18n['/menu'])
