@@ -1,4 +1,4 @@
-from locales.ru.txt import RU
+from i18n.locales.ru.txt import RU
 
 
 def get_translations() -> dict[str, str | dict[str, str]]:

@@ -51,12 +51,15 @@ class Config:
 
 
 def load_config(path: str | None = None) -> Config:
-    if not path or not os.path.exists(path):
-        logger.warning(".env file not found at '%s', skipping...", path)
-        load_dotenv(find_dotenv())
+    if path:
+        if not os.path.exists(path):
+            logger.warning(".env file not found at '%s', skipping...", path)
+            load_dotenv(find_dotenv())
+        else:
+            logger.info("Loading .env from '%s'", path)
+            load_dotenv(find_dotenv(filename=path))
     else:
-        logger.info("Loading .env from '%s'", path)
-        load_dotenv(find_dotenv(filename=path))
+        load_dotenv(find_dotenv())
 
     token = os.environ.get('BOT_TOKEN')
     if not token:

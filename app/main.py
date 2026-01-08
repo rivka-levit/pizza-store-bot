@@ -12,6 +12,7 @@ from redis.asyncio import Redis  # noqa
 from handlers.other import router as other_router
 from handlers.user_private import router as user_private_router
 from i18n.translator import get_translations
+from middlewares.i18n import TranslatorMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -45,6 +46,10 @@ async def main():
 
     # Register routers
     dp.include_routers(user_private_router, other_router)
+
+    # Register middlewares
+    logger.info('Including middlewares...')
+    dp.update.middleware(TranslatorMiddleware())
 
     # Translations
     translations = get_translations()

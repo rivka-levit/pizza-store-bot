@@ -1,12 +1,22 @@
-from aiogram import Router
+from aiogram import Bot, Router
+from aiogram.enums import BotCommandScopeType
 from aiogram.filters import Command, CommandStart
-from aiogram.types import Message
+from aiogram.types import Message, BotCommandScopeChat
+
+from keyboards.main_menu import get_main_menu_commands
 
 router = Router()
 
 
 @router.message(CommandStart())
-async def start_cmd(message: Message, i18n: dict[str, str]):
+async def start_cmd(message: Message, bot: Bot, i18n: dict[str, str]):
+    await bot.set_my_commands(
+        commands=get_main_menu_commands(i18n=i18n),
+        scope=BotCommandScopeChat(
+            type=BotCommandScopeType.CHAT,
+            chat_id=message.chat.id
+        )
+    )
     await message.answer(text=i18n['/start'])
 
 
