@@ -1,4 +1,6 @@
-RU: dict[str, str] = {
+from typing import Any
+
+RU: dict[str, str | Any] = {
     '/start': 'Привет, я виртуальный помощник.',
     '/help': 'Бот помогает заказать пиццу.',
     '/menu': 'Вот меню:',
@@ -11,4 +13,5 @@ RU: dict[str, str] = {
     'about_description': 'О нас',
     'payment_description': 'Оплата',
     'shipping_description': 'Доставка',
+    'restricted_words': {'кабан', 'хомяк', 'выхухоль'}
 }
