@@ -4,7 +4,10 @@ from typing import Any
 from aiogram import Router
 from aiogram.types import Message
 
+from filters.chat_types import ChatTypeFilter
+
 router = Router()
+router.message.filter(ChatTypeFilter(['group', 'supergroup']))
 
 
 def clean_text(text: str) -> str:

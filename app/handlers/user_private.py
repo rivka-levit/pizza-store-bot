@@ -3,9 +3,11 @@ from aiogram.enums import BotCommandScopeType
 from aiogram.filters import Command, CommandStart, or_f
 from aiogram.types import Message, BotCommandScopeChat
 
+from filters.chat_types import ChatTypeFilter
 from keyboards.main_menu import get_main_menu_commands
 
 router = Router()
+router.message.filter(ChatTypeFilter(['private']))
 
 
 @router.message(CommandStart())
