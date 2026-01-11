@@ -5,6 +5,7 @@ from aiogram.types import Message, BotCommandScopeChat
 
 from filters.chat_types import ChatTypeFilter
 from keyboards.main_menu import get_main_menu_commands
+from keyboards.reply import get_start_kb
 
 router = Router()
 router.message.filter(ChatTypeFilter(['private']))
@@ -19,7 +20,10 @@ async def start_cmd(message: Message, bot: Bot, i18n: dict[str, str]):
             chat_id=message.chat.id
         )
     )
-    await message.answer(text=i18n['/start'])
+    await message.answer(
+        text=i18n['/start'],
+        reply_markup=get_start_kb(i18n=i18n)
+    )
 
 
 @router.message(Command('help'))

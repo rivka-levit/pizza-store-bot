@@ -13,5 +13,10 @@ RU: dict[str, str | Any] = {
     'about_description': 'О нас',
     'payment_description': 'Оплата',
     'shipping_description': 'Доставка',
-    'restricted_words': {'кабан', 'хомяк', 'выхухоль'}
+    'restricted_words': {'кабан', 'хомяк', 'выхухоль'},
+    'btn_menu': 'Меню',
+    'btn_about': 'О магазине',
+    'btn_payment': 'Оплата',
+    'btn_shipping': 'Доставка',
+    'input_field_placeholder': 'Что Вас интересует?'
 }
