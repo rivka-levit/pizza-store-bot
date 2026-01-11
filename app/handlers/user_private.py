@@ -4,6 +4,7 @@ from aiogram.filters import Command, CommandStart, or_f
 from aiogram.types import Message, BotCommandScopeChat
 
 from filters.chat_types import ChatTypeFilter
+from filters.reply_buttons import ReplyButtonsFilter
 from keyboards.main_menu import get_main_menu_commands
 from keyboards.reply import get_start_kb
 
@@ -31,17 +32,18 @@ async def help_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/help'])
 
 
+@router.message(ReplyButtonsFilter('menu'))
 @router.message(or_f(Command('menu'), F.text.lower().contains('меню')))
 async def menu_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/menu'])
 
 
-@router.message(Command('about'))
+@router.message(or_f(Command('about'), ReplyButtonsFilter('about')))
 async def about_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/about'])
 
 
-@router.message(Command('payment'))
+@router.message(or_f(Command('payment'), ReplyButtonsFilter('payment')))
 async def payment_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/payment'])
 
@@ -50,6 +52,6 @@ async def payment_cmd(message: Message, i18n: dict[str, str]):
     F.text.lower().regexp(r'.*варианты? доставки.*') |
     F.text.lower().contains('доставк')
 )
-@router.message(Command('shipping'))
+@router.message(or_f(Command('shipping'), ReplyButtonsFilter('shipping')))
 async def shipping_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/shipping'])
