@@ -1,0 +1,24 @@
+from typing import Any
+
+from aiogram import Router
+from aiogram.types import Message, ReplyKeyboardMarkup
+
+from filters.chat_types import ChatTypeFilter
+from keyboards.reply_keyboards import reply_kb_factory
+
+router = Router()
+router.message.filter(ChatTypeFilter(['private']))
+
+
+def get_admin_keyboard(i18n: dict[str, str | Any]) -> ReplyKeyboardMarkup:
+    buttons = [
+        i18n['btn_add_item'],
+        i18n['btn_edit_item'],
+        i18n['btn_del_item'],
+        i18n['btn_just_looking'],
+    ]
+    return reply_kb_factory(
+        *buttons,
+        placeholder=i18n['placeholder_admin_kb'],
+        sizes=(2, 1, 1)
+    )

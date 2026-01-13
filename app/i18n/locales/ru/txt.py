@@ -41,5 +41,10 @@ RU: dict[str, str | Any] = {
     'btn_about': 'О магазине',
     'btn_payment': 'Оплата',
     'btn_shipping': 'Доставка',
-    'input_field_placeholder': 'Что Вас интересует?'
+    'input_field_placeholder': 'Что Вас интересует?',
+    'btn_add_item': 'Добавить товар',
+    'btn_edit_item': 'Изменить товар',
+    'btn_del_item': 'Удалить товар',
+    'btn_just_looking': 'Я так, просто смотрю',
+    'placeholder_admin_kb': 'Выберите действие...',
 }
