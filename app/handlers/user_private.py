@@ -6,7 +6,7 @@ from aiogram.types import Message, BotCommandScopeChat
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 from keyboards.main_menu import get_main_menu_commands
-from keyboards.reply import get_start_kb
+from keyboards.reply_keyboards import get_start_kb
 
 router = Router()
 router.message.filter(ChatTypeFilter(['private']))
