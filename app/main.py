@@ -43,6 +43,7 @@ async def main():
         token=config.bot.token,
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
+    bot.admin_ids = config.bot.admin_ids
     dp = Dispatcher(storage=storage)
 
     # Register routers
@@ -65,7 +66,6 @@ async def main():
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(
             bot,
-            bot_admin_ids = config.bot.admin_ids,
             allowed_updates=config.bot.allowed_updates,
             translations=translations,
             locales=locales,
