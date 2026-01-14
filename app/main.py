@@ -9,6 +9,7 @@ from aiogram.fsm.storage.redis import RedisStorage
 from config import Config, load_config
 from redis.asyncio import Redis  # noqa
 
+from handlers.admin_private import router as admin_private_router
 from handlers.user_group import router as user_group_router
 from handlers.user_private import router as user_private_router
 from i18n.translator import get_translations
@@ -46,6 +47,7 @@ async def main():
 
     # Register routers
     dp.include_routers(
+        admin_private_router,
         user_private_router,
         user_group_router
     )
@@ -63,6 +65,7 @@ async def main():
         await bot.delete_webhook(drop_pending_updates=True)
         await dp.start_polling(
             bot,
+            bot_admin_ids = config.bot.admin_ids,
             allowed_updates=config.bot.allowed_updates,
             translations=translations,
             locales=locales,

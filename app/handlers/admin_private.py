@@ -1,13 +1,15 @@
 from typing import Any
 
 from aiogram import Router
+from aiogram.filters import Command
 from aiogram.types import Message, ReplyKeyboardMarkup
 
 from filters.chat_types import ChatTypeFilter
+from filters.user_role import IsAdmin
 from keyboards.reply_keyboards import reply_kb_factory
 
 router = Router()
-router.message.filter(ChatTypeFilter(['private']))
+router.message.filter(ChatTypeFilter(['private']), IsAdmin())
 
 
 def get_admin_keyboard(i18n: dict[str, str | Any]) -> ReplyKeyboardMarkup:
@@ -21,4 +23,12 @@ def get_admin_keyboard(i18n: dict[str, str | Any]) -> ReplyKeyboardMarkup:
         *buttons,
         placeholder=i18n['placeholder_admin_kb'],
         sizes=(2, 1, 1)
+    )
+
+
+@router.message(Command('admin'))
+async def admin_cmd(message: Message, i18n: dict[str, str | Any]) -> None:
+    await message.answer(
+        text=i18n['/admin'],
+        reply_markup=get_admin_keyboard(i18n=i18n)
     )

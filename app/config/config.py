@@ -14,6 +14,7 @@ logger = logging.getLogger(__name__)
 @dataclass
 class BotConfig:
     token: str
+    admin_ids: list[int]
     allowed_updates: list[str]
 
 
@@ -68,6 +69,7 @@ def load_config(path: str | None = None) -> Config:
 
     bot = BotConfig(
         token=token,
+        admin_ids=[int(i) for i in os.environ.get('ADMIN_IDS').split(',')],
         allowed_updates=os.environ.get('ALLOWED_UPDATES').split(',')
     )
 
