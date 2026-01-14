@@ -31,6 +31,8 @@ RU: dict[str, str | Any] = {
         ),
         sep='\n------------------\n'
     ).as_html(),
+    '/cancel': 'Действия отменены',
+    '/back': 'Oк, вы вернулись к прошлому шагу',
     'start_description': 'Перезапустить бота',
     'help_description': 'Справка по работе бота',
     'menu_description': 'Меню пиццерии',
@@ -51,4 +53,9 @@ RU: dict[str, str | Any] = {
     'just_looking_answer': 'ОК, вот список товаров',
     'edit_item_answer': 'Выберите товар, который хотите изменить',
     'del_item_answer': 'Выберите товар(ы) для удаления',
+    'add_product_name': 'Введите название товара',
+    'add_product_description': 'Введите описание товара',
+    'add_product_price': 'Введите стоимость товара',
+    'add_product_image': 'Загрузите изображение товара',
+    'item_added': 'Товар добавлен',
 }
