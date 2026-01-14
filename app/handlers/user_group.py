@@ -1,7 +1,8 @@
 from string import punctuation
 from typing import Any
 
-from aiogram import Router
+from aiogram import Router, Bot
+from aiogram.filters import Command
 from aiogram.types import Message
 
 from filters.chat_types import ChatTypeFilter
@@ -12,6 +13,24 @@ router.message.filter(ChatTypeFilter(['group', 'supergroup']))
 
 def clean_text(text: str) -> str:
     return text.translate(str.maketrans('', '', punctuation))
+
+
+@router.message(Command('set_admins'))
+async def set_bot_admins(message: Message, bot: Bot) -> None:
+    """Set admins list to bot attribute."""
+
+    admins_list = await bot.get_chat_administrators(message.chat.id)
+
+    admin_ids = {
+        member.user.id for member in admins_list
+        if (member.status == 'creator' or member.status == 'administrator')
+           and member.user.id != bot.id
+    }
+
+    if message.from_user.id in admin_ids:
+        bot.admin_ids.update(admin_ids)  # noqa
+        await message.delete()
+
 
 
 @router.edited_message()
