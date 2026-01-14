@@ -48,4 +48,7 @@ RU: dict[str, str | Any] = {
     'btn_del_item': 'Удалить товар',
     'btn_just_looking': 'Я так, просто смотрю',
     'placeholder_admin_kb': 'Выберите действие...',
+    'just_looking_answer': 'ОК, вот список товаров',
+    'edit_item_answer': 'Выберите товар, который хотите изменить',
+    'del_item_answer': 'Выберите товар(ы) для удаления',
 }
