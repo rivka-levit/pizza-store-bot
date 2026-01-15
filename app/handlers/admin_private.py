@@ -1,11 +1,12 @@
 from typing import Any
 
 from aiogram import Router, F
-from aiogram.filters import Command
+from aiogram.filters import Command, or_f
 from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
+from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 from keyboards.reply_keyboards import reply_kb_factory
 
@@ -72,7 +73,7 @@ async def add_item_btn_clicked(
     )
 
 
-@router.message(Command('cancel'))
+@router.message(or_f(Command('cancel'), TextEqualFilter('cansel_fsm')))
 async def cancel_cmd(message: Message, i18n: dict[str, str | Any]) -> None:
     await message.answer(
         text=i18n['/cancel'],
@@ -80,7 +81,7 @@ async def cancel_cmd(message: Message, i18n: dict[str, str | Any]) -> None:
     )
 
 
-@router.message(Command('back'))
+@router.message(or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(message: Message, i18n: dict[str, str | Any]) -> None:
     await message.answer(text=i18n['/back'])
 
