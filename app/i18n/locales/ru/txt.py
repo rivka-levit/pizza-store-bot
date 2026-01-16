@@ -34,7 +34,7 @@ RU: dict[str, str | Any] = {
     '/cancel': 'Действия отменены',
     '/back': 'Oк, вы вернулись к прошлому шагу',
     'cansel_fsm': {'q', 'отмена', 'выход'},
-    'back_fsm': {'back', 'назад'},
+    'back_fsm': {'b', 'back', 'назад'},
     'start_description': 'Перезапустить бота',
     'help_description': 'Справка по работе бота',
     'menu_description': 'Меню пиццерии',
