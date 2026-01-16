@@ -4,34 +4,20 @@ from typing import Any
 from aiogram import Router, F
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardMarkup, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
-from keyboards.reply_keyboards import reply_kb_factory
+from keyboards.reply_keyboards import get_admin_keyboard
 from states import AddItem
 
 logger = logging.getLogger(__name__)
 
 router = Router()
 router.message.filter(ChatTypeFilter(['private']), IsAdmin())
-
-
-def get_admin_keyboard(i18n: dict[str, str | Any]) -> ReplyKeyboardMarkup:
-    buttons = [
-        i18n['btn_add_item'],
-        i18n['btn_edit_item'],
-        i18n['btn_del_item'],
-        i18n['btn_just_looking'],
-    ]
-    return reply_kb_factory(
-        *buttons,
-        placeholder=i18n['placeholder_admin_kb'],
-        sizes=(2, 1, 1)
-    )
 
 
 @router.message(Command('admin'))
