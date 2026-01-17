@@ -5,7 +5,7 @@ Handlers for adding items Finite State Machine (FSM)
 import logging
 from typing import Any
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
@@ -74,7 +74,7 @@ async def back_cmd(
         previous = step
 
 
-@router.message(AddItem.name, F.text)
+@router.message(AddItem.name)
 async def add_product_name(
         message: Message, i18n:
         dict[str, str | Any],
@@ -82,12 +82,18 @@ async def add_product_name(
 ) -> None:
     """Add product name to state dictionary and request product description."""
 
-    await state.update_data(name=message.text)
-    await message.answer(text=i18n['add_product_description'])
-    await state.set_state(AddItem.description)
+    if message.text:
+        await state.update_data(name=message.text)
+        await message.answer(text=i18n['add_product_description'])
+        await state.set_state(AddItem.description)
+    else:
+        logger.warning('Wrong data received at the name step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['add_product_name']}'
+        )
 
 
-@router.message(AddItem.description, F.text)
+@router.message(AddItem.description)
 async def add_product_description(
         message: Message,
         i18n: dict[str, str | Any],
@@ -95,12 +101,18 @@ async def add_product_description(
 ) -> None:
     """Add product description to state dictionary and request product price."""
 
-    await state.update_data(description=message.text)
-    await message.answer(text=i18n['add_product_price'])
-    await state.set_state(AddItem.price)
+    if message.text:
+        await state.update_data(description=message.text)
+        await message.answer(text=i18n['add_product_price'])
+        await state.set_state(AddItem.price)
+    else:
+        logger.warning('Wrong data received at the description step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['add_product_description']}'
+        )
 
 
-@router.message(AddItem.price, F.text)
+@router.message(AddItem.price)
 async def add_product_price(
         message: Message, i18n:
         dict[str, str | Any],
@@ -108,12 +120,18 @@ async def add_product_price(
 ) -> None:
     """Add product price to state dictionary and request product image."""
 
-    await state.update_data(price=message.text)
-    await message.answer(text=i18n['add_product_image'])
-    await state.set_state(AddItem.image)
+    if message.text:
+        await state.update_data(price=message.text)
+        await message.answer(text=i18n['add_product_image'])
+        await state.set_state(AddItem.image)
+    else:
+        logger.warning('Wrong data received at the price step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['add_product_price']}'
+        )
 
 
-@router.message(AddItem.image, F.photo)
+@router.message(AddItem.image)
 async def add_product_image(
         message: Message,
         i18n: dict[str, str | Any],
@@ -121,12 +139,18 @@ async def add_product_image(
 ) -> None:
     """Add product image to state dictionary and quit fsm dialog."""
 
-    await state.update_data(image=message.photo[-1].file_id)
-    await message.answer(
-        text=i18n['item_added'],
-        reply_markup=get_admin_keyboard(i18n=i18n)
-    )
-    data = await state.get_data()
-    await message.answer(str(data))
-    await state.clear()
-    logger.info('Add item process finished.')
+    if message.photo:
+        await state.update_data(image=message.photo[-1].file_id)
+        await message.answer(
+            text=i18n['item_added'],
+            reply_markup=get_admin_keyboard(i18n=i18n)
+        )
+        data = await state.get_data()
+        await message.answer(str(data))
+        await state.clear()
+        logger.info('Add item process finished.')
+    else:
+        logger.warning('Wrong data received at the image step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['add_product_image']}'
+        )

@@ -59,5 +59,6 @@ RU: dict[str, str | Any] = {
     'add_product_description': 'Введите описание товара',
     'add_product_price': 'Введите стоимость товара',
     'add_product_image': 'Загрузите изображение товара',
+    'wrong_data_received': 'Вы ввели недопустимые данные.',
     'item_added': 'Товар добавлен',
 }
