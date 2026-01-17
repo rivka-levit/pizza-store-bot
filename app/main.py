@@ -50,6 +50,11 @@ async def main():
     bot.admin_ids = config.bot.admin_ids
     dp = Dispatcher(storage=storage)
 
+    # Register middlewares
+    logger.info('Including middlewares...')
+    dp.update.middleware(TranslatorMiddleware())
+    admin_add_item_router.message.middleware(AddItemStepTexts())
+
     # Register routers
     dp.include_routers(
         admin_add_item_router,
@@ -57,11 +62,6 @@ async def main():
         user_private_router,
         user_group_router
     )
-
-    # Register middlewares
-    logger.info('Including middlewares...')
-    dp.update.middleware(TranslatorMiddleware())
-    dp.message.middleware(AddItemStepTexts())
 
     # Translations
     translations = get_translations()
