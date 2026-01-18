@@ -35,7 +35,9 @@ config_file: Config = load_config()
 
 
 async def on_startup(engine: AsyncEngine):
-    async with engine.begin() as conn:
+    """Create db tables on start up the bot if they not exist."""
+
+    async with engine.begin() as conn:  # noqa
         await conn.run_sync(Base.metadata.create_all)
 
 
@@ -43,13 +45,16 @@ async def on_shutdown():
     pass
 
 
-async def main(config: Config):
+async def main():
+    config: Config = load_config()
+
     logging.basicConfig(
         level=logging.getLevelName(config.log.level),
         format=config.log.format,
         stream=config.log.stream
     )
 
+    # Connect to database and start engine
     db_url = (f'postgresql+asyncpg://{config.db.user}:{config.db.password}'
               f'@{config.db.host}/{config.db.name}')
 
@@ -61,6 +66,7 @@ async def main(config: Config):
         expire_on_commit=False
     )
 
+    # Create Redis storage
     storage = RedisStorage(
         redis=Redis(
             host=config.redis.host,
@@ -70,7 +76,6 @@ async def main(config: Config):
             username=config.redis.username,
         )
     )
-
 
     # Initialize the bot
     bot = Bot(
@@ -115,4 +120,4 @@ async def main(config: Config):
 
 
 if __name__ == "__main__":
-    asyncio.run(main(config_file))
+    asyncio.run(main())
