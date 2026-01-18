@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 class DatabaseSessionMiddleware(BaseMiddleware):
-    def __init__(self, db_pool: async_sessionmaker):
-        self.db_pool = db_pool
+    def __init__(self, session_pool: async_sessionmaker):
+        self.session_pool = session_pool
 
     async def __call__(
             self,
@@ -21,12 +21,10 @@ class DatabaseSessionMiddleware(BaseMiddleware):
             event: TelegramObject,
             data: dict[str, Any]
     ) -> Any:
-        with self.db_pool() as session:
+        async with self.session_pool() as session:
             try:
                 data['session'] = session
-                result = await handler(event, data)
+                return await handler(event, data)
             except Exception as e:
                 logger.error('Transaction rolled back due to error: %s', e)
                 raise
-
-        return result
