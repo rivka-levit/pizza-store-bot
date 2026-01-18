@@ -61,4 +61,6 @@ RU: dict[str, str | Any] = {
     'add_product_image': 'Загрузите изображение товара',
     'wrong_data_received': 'Вы ввели недопустимые данные.',
     'item_added': 'Товар добавлен',
+    'add_db_success': 'Товар добавлен.',
+    'add_db_error': 'Ошибка\n{}\nОбратитесь к программисту.',
 }

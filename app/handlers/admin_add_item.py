@@ -10,6 +10,10 @@ from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.orm_query import orm_add_product
+
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
@@ -135,7 +139,8 @@ async def add_product_price(
 async def add_product_image(
         message: Message,
         i18n: dict[str, str | Any],
-        state: FSMContext
+        state: FSMContext,
+        session: AsyncSession
 ) -> None:
     """Add product image to state dictionary and quit fsm dialog."""
 
@@ -146,9 +151,23 @@ async def add_product_image(
             reply_markup=get_admin_keyboard(i18n=i18n)
         )
         data = await state.get_data()
-        await message.answer(str(data))
-        await state.clear()
-        logger.info('Add item process finished.')
+
+        try:
+            await orm_add_product(session=session, data=data)
+            logger.info('Add item process finished.')
+            await message.answer(
+                text=i18n['add_db_success'],
+                reply_markup=get_admin_keyboard(i18n=i18n)
+            )
+            await state.clear()
+        except Exception as e:
+            logger.exception(f'Add item process failed. Database error: {e}')
+            await message.answer(
+                text=i18n['add_db_error'].format(str(e)),
+                reply_markup=get_admin_keyboard(i18n=i18n)
+            )
+            await state.clear()
+
     else:
         logger.warning('Wrong data received at the image step.')
         await message.answer(
