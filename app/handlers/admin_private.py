@@ -51,25 +51,9 @@ async def cancel_cmd(
     )
 
 
-@router.message(ReplyButtonsFilter('just_looking'))
-async def just_looking_btn_clicked(
+@router.message(ReplyButtonsFilter('catalog'))
+async def products_catalog(
         message: Message,
         i18n: dict[str, str | Any]
 ) -> None:
-    await message.answer(text=i18n['just_looking_answer'])
-
-
-@router.message(ReplyButtonsFilter('edit_item'))
-async def edit_item_btn_clicked(
-        message: Message,
-        i18n: dict[str, str | Any]
-) -> None:
-    await message.answer(text=i18n['edit_item_answer'])
-
-
-@router.message(ReplyButtonsFilter('del_item'))
-async def del_item_btn_clicked(
-        message: Message,
-        i18n: dict[str, str | Any]
-) -> None:
-    await message.answer(text=i18n['del_item_answer'])
+    await message.answer(text=i18n['catalog_answer'])

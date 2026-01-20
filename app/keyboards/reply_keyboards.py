@@ -54,12 +54,10 @@ def reply_kb_factory(
 def get_admin_keyboard(i18n: dict[str, str | Any]) -> ReplyKeyboardMarkup:
     buttons = [
         i18n['btn_add_item'],
-        i18n['btn_edit_item'],
-        i18n['btn_del_item'],
-        i18n['btn_just_looking'],
+        i18n['btn_catalog'],
     ]
     return reply_kb_factory(
         *buttons,
         placeholder=i18n['placeholder_admin_kb'],
-        sizes=(2, 1, 1)
+        sizes=(2,)
     )
