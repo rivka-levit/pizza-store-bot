@@ -50,7 +50,7 @@ RU: dict[str, str | Any] = {
     'btn_add_item': 'Добавить товар',
     'btn_catalog': 'Ассортимент',
     'placeholder_admin_kb': 'Выберите действие...',
-    'catalog_answer': Bold('Вот список товаров:\n').as_html(),
+    'catalog_answer': Bold('Вот список товаров:').as_html(),
     'add_product_name': 'Введите название товара',
     'add_product_description': 'Введите описание товара',
     'add_product_price': 'Введите стоимость товара',
@@ -59,4 +59,6 @@ RU: dict[str, str | Any] = {
     'item_added': 'Товар добавлен',
     'add_db_success': 'Товар добавлен.',
     'add_db_error': 'Ошибка\n{}\nОбратитесь к программисту.',
+    'price': 'Стоимость',
+    'currency': 'р.',
 }

@@ -146,10 +146,6 @@ async def add_product_image(
 
     if message.photo:
         await state.update_data(image=message.photo[-1].file_id)
-        await message.answer(
-            text=i18n['item_added'],
-            reply_markup=get_admin_keyboard(i18n=i18n)
-        )
         data = await state.get_data()
 
         try:

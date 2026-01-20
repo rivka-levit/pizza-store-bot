@@ -6,6 +6,10 @@ from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.orm_query import orm_get_products
+
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
@@ -54,6 +58,13 @@ async def cancel_cmd(
 @router.message(ReplyButtonsFilter('catalog'))
 async def products_catalog(
         message: Message,
-        i18n: dict[str, str | Any]
+        i18n: dict[str, str | Any],
+        session: AsyncSession
 ) -> None:
     await message.answer(text=i18n['catalog_answer'])
+    for product in await orm_get_products(session):
+        await message.answer_photo(
+            product.image,
+            caption=f'<strong>{product.name}</strong>\n{product.description}\n'
+                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}'
+        )

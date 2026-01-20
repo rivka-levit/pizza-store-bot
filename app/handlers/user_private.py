@@ -1,7 +1,13 @@
+from typing import Any
+
 from aiogram import Bot, F, Router
 from aiogram.enums import BotCommandScopeType
 from aiogram.filters import Command, CommandStart, or_f
 from aiogram.types import Message, BotCommandScopeChat
+
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from database.orm_query import orm_get_products
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
@@ -34,8 +40,14 @@ async def help_cmd(message: Message, i18n: dict[str, str]):
 
 @router.message(ReplyButtonsFilter('menu'))
 @router.message(or_f(Command('menu'), F.text.lower().contains('меню')))
-async def menu_cmd(message: Message, i18n: dict[str, str]):
+async def menu_cmd(message: Message, i18n: dict[str, Any], session: AsyncSession):
     await message.answer(text=i18n['/menu'])
+    for product in await orm_get_products(session):
+        await message.answer_photo(
+            product.image,
+            caption=f'<strong>{product.name}</strong>\n{product.description}\n'
+                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}'
+        )
 
 
 @router.message(or_f(Command('about'), ReplyButtonsFilter('about')))
