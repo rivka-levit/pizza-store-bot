@@ -5,6 +5,8 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory
 
+from database.models import Product
+
 
 def inline_keyboard_factory(
         *,
@@ -23,16 +25,19 @@ def inline_keyboard_factory(
 
 
 def get_edit_product_keyboard(
-        product_id: int,
+        product: Product,
         i18n: dict[str, Any]
 ) -> InlineKeyboardMarkup:
     """Keyboard to edit or delete a product."""
 
     buttons = {
-        f'{i18n['btn_edit_product']}':
-            f'{EditProductCallbackFactory(product_id=product_id).pack()}',
-        f'{i18n['btn_delete_product']}':
-            f'{DeleteProductCallbackFactory(product_id=product_id).pack()}'
+        f'{i18n['btn_edit_product']}': f'{EditProductCallbackFactory(
+                                                product_id=product.id, 
+                                                product_name=product.name
+                                            ).pack()}',
+        f'{i18n['btn_delete_product']}': f'{DeleteProductCallbackFactory(
+                                                product_id=product.id, 
+                                                product_name=product.name
+                                            ).pack()}'
     }
-
     return inline_keyboard_factory(buttons=buttons)

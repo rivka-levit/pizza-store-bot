@@ -63,4 +63,6 @@ RU: dict[str, str | Any] = {
     'currency': 'р.',
     'btn_edit_product': 'Редактировать',
     'btn_delete_product': 'Удалить',
+    'product_not_exists': 'Товара нет в базе данных',
+    'product_deleted': 'Товар {} удален',
 }

@@ -4,11 +4,13 @@ from typing import Any
 from aiogram import Router
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm.exc import ObjectDeletedError, NoResultFound
 
-from database.orm_query import orm_get_products
+from callbacks import DeleteProductCallbackFactory
+from database.orm_query import orm_get_products, orm_delete_product
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
@@ -68,5 +70,36 @@ async def products_catalog(
             product.image,
             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
                     f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}',
-            reply_markup=get_edit_product_keyboard(product.id, i18n)
+            reply_markup=get_edit_product_keyboard(product, i18n)
         )
+
+
+@router.callback_query(DeleteProductCallbackFactory.filter())
+async def delete_product_btn_clicked(
+        query: CallbackQuery,
+        callback_data: DeleteProductCallbackFactory,
+        i18n: dict[str, Any],
+        session: AsyncSession
+) -> None:
+    """Delete product from database."""
+
+    try:
+        await orm_delete_product(session, callback_data.product_id)
+    except (ObjectDeletedError, NoResultFound) as e:
+        logger.error(
+            f'{e.__class__.__name__}: Product with id '
+            f'{callback_data.product_id} was not found.'
+        )
+        await query.answer(text=i18n['product_not_exists'])
+    except Exception as e:
+        logger.error(e)
+        await query.answer()
+    else:
+        logger.info(
+            f'Product {callback_data.product_name} with id '
+            f'`{callback_data.product_id}` deleted successfully.'
+        )
+        await query.message.answer(
+            text=i18n['product_deleted'].format(callback_data.product_name)
+        )
+        await query.answer()
