@@ -15,6 +15,7 @@ from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
+from keyboards.inline_keyboards import get_edit_product_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 
 logger = logging.getLogger(__name__)
@@ -66,5 +67,6 @@ async def products_catalog(
         await message.answer_photo(
             product.image,
             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}'
+                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}',
+            reply_markup=get_edit_product_keyboard(product.id, i18n)
         )

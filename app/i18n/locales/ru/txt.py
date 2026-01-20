@@ -61,4 +61,6 @@ RU: dict[str, str | Any] = {
     'add_db_error': 'Ошибка\n{}\nОбратитесь к программисту.',
     'price': 'Стоимость',
     'currency': 'р.',
+    'btn_edit_product': 'Редактировать',
+    'btn_delete_product': 'Удалить',
 }
