@@ -1,25 +1,38 @@
 from typing import Any
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory
+
+
+def inline_keyboard_factory(
+        *,
+        buttons: dict[str, str],
+        sizes: tuple[int, ...] = (2,)
+) -> InlineKeyboardMarkup:
+    """Base function to create any inline keyboard."""
+
+    builder = InlineKeyboardBuilder()
+
+    for text, data in buttons.items():
+        builder.add(InlineKeyboardButton(text=text, callback_data=data))
+
+    return builder.adjust(*sizes).as_markup()
+
 
 
 def get_edit_product_keyboard(
         product_id: int,
         i18n: dict[str, Any]
 ) -> InlineKeyboardMarkup:
-    buttons = [
-        [
-            InlineKeyboardButton(
-                text=i18n['btn_edit_product'],
-                callback_data=EditProductCallbackFactory(product_id=product_id).pack()
-            ),
-            InlineKeyboardButton(
-                text=i18n['btn_delete_product'],
-                callback_data=DeleteProductCallbackFactory(product_id=product_id).pack()
-            ),
-        ]
-    ]
+    """Keyboard to edit or delete a product."""
 
-    return InlineKeyboardMarkup(inline_keyboard=buttons)
+    buttons = {
+        f'{i18n['btn_edit_product']}':
+            f'{EditProductCallbackFactory(product_id=product_id).pack()}',
+        f'{i18n['btn_delete_product']}':
+            f'{DeleteProductCallbackFactory(product_id=product_id).pack()}'
+    }
+
+    return inline_keyboard_factory(buttons=buttons)
