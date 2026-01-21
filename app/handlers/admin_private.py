@@ -90,7 +90,8 @@ async def delete_product_btn_clicked(
             f'{e.__class__.__name__}: Product with id '
             f'{callback_data.product_id} was not found.'
         )
-        await query.answer(text=i18n['product_not_exists'])
+        await query.answer()
+        await query.message.answer(text=i18n['product_not_exists'])
     except Exception as e:
         logger.error(e)
         await query.answer()
@@ -99,7 +100,7 @@ async def delete_product_btn_clicked(
             f'Product {callback_data.product_name} with id '
             f'`{callback_data.product_id}` deleted successfully.'
         )
+        await query.answer()
         await query.message.answer(
             text=i18n['product_deleted'].format(callback_data.product_name)
         )
-        await query.answer()

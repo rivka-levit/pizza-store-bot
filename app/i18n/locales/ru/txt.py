@@ -51,10 +51,6 @@ RU: dict[str, str | Any] = {
     'btn_catalog': 'Ассортимент',
     'placeholder_admin_kb': 'Выберите действие...',
     'catalog_answer': Bold('Вот список товаров:').as_html(),
-    'add_product_name': 'Введите название товара',
-    'add_product_description': 'Введите описание товара',
-    'add_product_price': 'Введите стоимость товара',
-    'add_product_image': 'Загрузите изображение товара',
     'wrong_data_received': 'Вы ввели недопустимые данные.',
     'item_added': 'Товар добавлен',
     'add_db_success': 'Товар добавлен.',
@@ -65,4 +61,17 @@ RU: dict[str, str | Any] = {
     'btn_delete_product': 'Удалить',
     'product_not_exists': 'Товара нет в базе данных',
     'product_deleted': 'Товар {} удален',
+    'no_prev_step': 'Предыдущего шага нет. Введите название товара или команду /cancel',
+
+    # Add product texts
+    'add_product_name': 'Введите название товара',
+    'add_product_description': 'Введите описание товара',
+    'add_product_price': 'Введите стоимость товара',
+    'add_product_image': 'Загрузите изображение товара',
+
+    # Edit product texts
+    'edit_product_name': 'Введите новое название товара',
+    'edit_product_description': 'Введите новое описание товара',
+    'edit_product_price': 'Введите новую стоимость товара',
+    'edit_product_image': 'Загрузите новое изображение товара',
 }

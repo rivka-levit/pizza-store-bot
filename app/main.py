@@ -19,14 +19,15 @@ from config import Config, load_config
 from database.models import Base
 
 from handlers.admin_add_item import router as admin_add_item_router
+from handlers.admin_edit_item import router as admin_edit_item_router
 from handlers.admin_private import router as admin_private_router
 from handlers.user_group import router as user_group_router
 from handlers.user_private import router as user_private_router
 
 from i18n.translator import get_translations
 
-from middlewares.add_item_step_texts import AddItemStepTexts
 from middlewares.db import DatabaseSessionMiddleware
+from middlewares.fsm_step_texts import AddItemStepTexts, EditItemStepTexts
 from middlewares.i18n import TranslatorMiddleware
 
 logger = logging.getLogger(__name__)
@@ -93,10 +94,12 @@ async def main():
     dp.update.middleware(TranslatorMiddleware())
     dp.update.middleware(DatabaseSessionMiddleware(session_pool=session_maker))
     admin_add_item_router.message.middleware(AddItemStepTexts())
+    admin_edit_item_router.message.middleware(EditItemStepTexts())
 
     # Register routers
     dp.include_routers(
         admin_add_item_router,
+        admin_edit_item_router,
         admin_private_router,
         user_private_router,
         user_group_router
