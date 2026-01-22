@@ -122,3 +122,25 @@ async def edit_item_description(
         await state.update_data(description=message.text)
         await message.answer(text=i18n['edit_product_price'])
         await state.set_state(AddEditItem.price)
+
+
+@router.message(StateFilter(AddEditItem.name), or_f(F.text, F.text=='.'))
+async def edit_item_price(
+        message: Message,
+        i18n: dict[str, str | Any],
+        state: FSMContext
+) -> None:
+    """Edit product price in database or skip the step."""
+
+    if not message.text:
+        logger.warning('Wrong data received at the name step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_price']}'
+        )
+    elif message.text == '.':
+        await message.answer(i18n['edit_product_image'])
+        await state.set_state(AddEditItem.image)
+    else:
+        await state.update_data(price=message.text)
+        await message.answer(text=i18n['edit_product_image'])
+        await state.set_state(AddEditItem.image)
