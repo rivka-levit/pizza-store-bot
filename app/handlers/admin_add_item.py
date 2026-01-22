@@ -78,8 +78,8 @@ async def back_cmd(
 
 @router.message(AddEditItem.name)
 async def add_product_name(
-        message: Message, i18n:
-        dict[str, str | Any],
+        message: Message,
+        i18n: dict[str, str | Any],
         state: FSMContext
 ) -> None:
     """Add product name to state dictionary and request product description."""

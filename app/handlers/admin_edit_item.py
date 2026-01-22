@@ -5,7 +5,7 @@ Handlers for editing items Finite State Machine (FSM)
 import logging
 from typing import Any
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
@@ -78,3 +78,25 @@ async def back_cmd(
             )
             return
         previous = step
+
+
+@router.message(StateFilter(AddEditItem.name), or_f(F.text, F.text=='.'))
+async def edit_item_name(
+        message: Message,
+        i18n: dict[str, str | Any],
+        state: FSMContext
+) -> None:
+    """Edit product name in database or skip the step."""
+
+    if not message.text:
+        logger.warning('Wrong data received at the name step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_name']}'
+        )
+    elif message.text == '.':
+        await message.answer(i18n['edit_product_description'])
+        await state.set_state(AddEditItem.description)
+    else:
+        await state.update_data(name=message.text)
+        await message.answer(text=i18n['edit_product_description'])
+        await state.set_state(AddEditItem.description)
