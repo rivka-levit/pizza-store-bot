@@ -44,9 +44,37 @@ async def edit_item_btn_clicked(
 
     AddEditItem.product_edit_id = callback_data.product_id
 
+    await callback.answer()
     await callback.message.answer(
         text=i18n['edit_product_name'],
         reply_markup=ReplyKeyboardRemove()
     )
     logger.info('Edit item process started.')
     await state.set_state(AddEditItem.name)
+
+
+@router.message(StateFilter(AddEditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
+async def back_cmd(
+        message: Message,
+        i18n: dict[str, str | Any],
+        state: FSMContext,
+        edit_item_texts: dict[str, str]
+) -> None:
+    """Roll back FSM dialog one step backwards."""
+
+    current_state = await state.get_state()
+    if current_state is None:
+        return
+    if current_state == AddEditItem.name:
+        await message.answer(i18n['no_prev_step'])
+        return
+
+    previous = None
+    for step in AddEditItem.__all_states__:
+        if step.state == current_state:
+            await state.set_state(previous)
+            await message.answer(
+                text=f"{i18n['/back']}\n{edit_item_texts[previous.state]}"
+            )
+            return
+        previous = step
