@@ -20,6 +20,8 @@ from filters.user_role import IsAdmin
 from keyboards.inline_keyboards import get_edit_product_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 
+from states import AddEditItem
+
 logger = logging.getLogger(__name__)
 
 router = Router()
@@ -46,8 +48,12 @@ async def cancel_cmd(
     """Cancel any FSM dialog and clear state."""
 
     current_state = await state.get_state()
+
     if current_state is None:
         return
+
+    if AddEditItem.product_to_edit:
+        AddEditItem.product_to_edit = None
 
     await state.clear()
     logger.info('Add item process cancelled.')

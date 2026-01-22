@@ -1,5 +1,7 @@
 from aiogram.fsm.state import State, StatesGroup
 
+from database.models import Product
+
 
 class AddEditItem(StatesGroup):
     name = State()
@@ -7,4 +9,4 @@ class AddEditItem(StatesGroup):
     price = State()
     image = State()
 
-    product_edit_id = None
+    product_to_edit: Product | None = None

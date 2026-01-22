@@ -5,14 +5,14 @@ Handlers for editing items Finite State Machine (FSM)
 import logging
 from typing import Any
 
-from aiogram import Router, F
+from aiogram import Router
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_get_product
+from database.orm_query import orm_get_product, orm_update_product
 
 from callbacks import EditProductCallbackFactory
 
@@ -38,11 +38,14 @@ async def edit_item_btn_clicked(
         callback: CallbackQuery,
         callback_data: EditProductCallbackFactory,
         i18n: dict[str, Any],
+        session: AsyncSession,
         state: FSMContext
 ):
     """Start editing a product. Request the name."""
 
-    AddEditItem.product_edit_id = callback_data.product_id
+    product = await orm_get_product(session, int(callback_data.product_id))
+
+    AddEditItem.product_to_edit = product
 
     await callback.answer()
     await callback.message.answer(
@@ -80,7 +83,7 @@ async def back_cmd(
         previous = step
 
 
-@router.message(StateFilter(AddEditItem.name), or_f(F.text, F.text=='.'))
+@router.message(StateFilter(AddEditItem.name))
 async def edit_item_name(
         message: Message,
         i18n: dict[str, str | Any],
@@ -94,6 +97,7 @@ async def edit_item_name(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_name']}'
         )
     elif message.text == '.':
+        await state.update_data(name=AddEditItem.product_to_edit.name)
         await message.answer(i18n['edit_product_description'])
         await state.set_state(AddEditItem.description)
     else:
@@ -102,7 +106,7 @@ async def edit_item_name(
         await state.set_state(AddEditItem.description)
 
 
-@router.message(StateFilter(AddEditItem.name), or_f(F.text, F.text=='.'))
+@router.message(StateFilter(AddEditItem.description))
 async def edit_item_description(
         message: Message,
         i18n: dict[str, str | Any],
@@ -116,6 +120,7 @@ async def edit_item_description(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_description']}'
         )
     elif message.text == '.':
+        await state.update_data(description=AddEditItem.product_to_edit.description)
         await message.answer(i18n['edit_product_price'])
         await state.set_state(AddEditItem.price)
     else:
@@ -124,7 +129,7 @@ async def edit_item_description(
         await state.set_state(AddEditItem.price)
 
 
-@router.message(StateFilter(AddEditItem.name), or_f(F.text, F.text=='.'))
+@router.message(StateFilter(AddEditItem.price))
 async def edit_item_price(
         message: Message,
         i18n: dict[str, str | Any],
@@ -138,9 +143,50 @@ async def edit_item_price(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_price']}'
         )
     elif message.text == '.':
+        await state.update_data(price=AddEditItem.product_to_edit.price)
         await message.answer(i18n['edit_product_image'])
         await state.set_state(AddEditItem.image)
     else:
         await state.update_data(price=message.text)
         await message.answer(text=i18n['edit_product_image'])
         await state.set_state(AddEditItem.image)
+
+
+@router.message(StateFilter(AddEditItem.image))
+async def edit_item_image(
+        message: Message,
+        i18n: dict[str, str | Any],
+        session: AsyncSession,
+        state: FSMContext
+) -> None:
+    """Edit product image in database."""
+
+    if message.text and message.text == '.':
+        await state.update_data(image=AddEditItem.product_to_edit.image)
+    elif not message.photo:
+        logger.warning('Wrong data received at the image step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_image']}'
+        )
+    else:
+        await state.update_data(image=message.photo[-1].file_id)
+        product_id = AddEditItem.product_to_edit.id
+        data = await state.get_data()
+
+        try:
+            await orm_update_product(session, product_id, data)
+        except Exception as e:
+            logger.exception(f'Edit item process failed. Database error: {e}')
+            await message.answer(
+                text=i18n['add_db_error'].format(str(e)),
+                reply_markup=get_admin_keyboard(i18n=i18n)
+            )
+        else:
+            logger.info('Edit item process finished.')
+            await message.answer(
+                text=i18n['add_db_success'],
+                reply_markup=get_admin_keyboard(i18n=i18n)
+            )
+        finally:
+            await state.clear()
+            AddEditItem.product_to_edit = None
