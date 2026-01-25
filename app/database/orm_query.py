@@ -3,6 +3,7 @@ from typing import Any
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import Mapped
 
 from database.models import Product
 
@@ -33,12 +34,12 @@ async def orm_get_product(session: AsyncSession, product_id: int) -> Product:
 
     query = select(Product).where(Product.id == product_id)
     result = await session.execute(query)
-    return result.scalars().one()
+    return result.scalars().one_or_none()
 
 
 async def orm_update_product(
         session: AsyncSession,
-        product_id: int,
+        product_id: int | Mapped[int],
         data: dict[str, Any]
 ) -> None:
     """Update product in database"""
