@@ -21,7 +21,7 @@ from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
 from keyboards.reply_keyboards import get_admin_keyboard
-from states import AddEditItem
+from states import EditItem
 
 logger = logging.getLogger(__name__)
 
@@ -45,7 +45,7 @@ async def edit_item_btn_clicked(
 
     product = await orm_get_product(session, int(callback_data.product_id))
 
-    AddEditItem.product_to_edit = product
+    EditItem.product_to_edit = product
 
     await callback.answer()
     await callback.message.answer(
@@ -53,10 +53,10 @@ async def edit_item_btn_clicked(
         reply_markup=ReplyKeyboardRemove()
     )
     logger.info('Edit item process started.')
-    await state.set_state(AddEditItem.name)
+    await state.set_state(EditItem.name)
 
 
-@router.message(StateFilter(AddEditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
+@router.message(StateFilter(EditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(
         message: Message,
         i18n: dict[str, str | Any],
@@ -68,12 +68,12 @@ async def back_cmd(
     current_state = await state.get_state()
     if current_state is None:
         return
-    if current_state == AddEditItem.name:
+    if current_state == EditItem.name:
         await message.answer(i18n['no_prev_step'])
         return
 
     previous = None
-    for step in AddEditItem.__all_states__:
+    for step in EditItem.__all_states__:
         if step.state == current_state:
             await state.set_state(previous)
             await message.answer(
@@ -83,7 +83,7 @@ async def back_cmd(
         previous = step
 
 
-@router.message(StateFilter(AddEditItem.name))
+@router.message(StateFilter(EditItem.name))
 async def edit_item_name(
         message: Message,
         i18n: dict[str, str | Any],
@@ -97,16 +97,16 @@ async def edit_item_name(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_name']}'
         )
     elif message.text == '.':
-        await state.update_data(name=AddEditItem.product_to_edit.name)
+        await state.update_data(name=EditItem.product_to_edit.name)
         await message.answer(i18n['edit_product_description'])
-        await state.set_state(AddEditItem.description)
+        await state.set_state(EditItem.description)
     else:
         await state.update_data(name=message.text)
         await message.answer(text=i18n['edit_product_description'])
-        await state.set_state(AddEditItem.description)
+        await state.set_state(EditItem.description)
 
 
-@router.message(StateFilter(AddEditItem.description))
+@router.message(StateFilter(EditItem.description))
 async def edit_item_description(
         message: Message,
         i18n: dict[str, str | Any],
@@ -120,16 +120,16 @@ async def edit_item_description(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_description']}'
         )
     elif message.text == '.':
-        await state.update_data(description=AddEditItem.product_to_edit.description)
+        await state.update_data(description=EditItem.product_to_edit.description)
         await message.answer(i18n['edit_product_price'])
-        await state.set_state(AddEditItem.price)
+        await state.set_state(EditItem.price)
     else:
         await state.update_data(description=message.text)
         await message.answer(text=i18n['edit_product_price'])
-        await state.set_state(AddEditItem.price)
+        await state.set_state(EditItem.price)
 
 
-@router.message(StateFilter(AddEditItem.price))
+@router.message(StateFilter(EditItem.price))
 async def edit_item_price(
         message: Message,
         i18n: dict[str, str | Any],
@@ -143,16 +143,16 @@ async def edit_item_price(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_price']}'
         )
     elif message.text == '.':
-        await state.update_data(price=AddEditItem.product_to_edit.price)
+        await state.update_data(price=EditItem.product_to_edit.price)
         await message.answer(i18n['edit_product_image'])
-        await state.set_state(AddEditItem.image)
+        await state.set_state(EditItem.image)
     else:
         await state.update_data(price=message.text)
         await message.answer(text=i18n['edit_product_image'])
-        await state.set_state(AddEditItem.image)
+        await state.set_state(EditItem.image)
 
 
-@router.message(StateFilter(AddEditItem.image))
+@router.message(StateFilter(EditItem.image))
 async def edit_item_image(
         message: Message,
         i18n: dict[str, str | Any],
@@ -162,7 +162,7 @@ async def edit_item_image(
     """Edit product image in database."""
 
     if message.text and message.text == '.':
-        await state.update_data(image=AddEditItem.product_to_edit.image)
+        await state.update_data(image=EditItem.product_to_edit.image)
     elif not message.photo:
         logger.warning('Wrong data received at the image step.')
         await message.answer(
@@ -170,7 +170,7 @@ async def edit_item_image(
         )
     else:
         await state.update_data(image=message.photo[-1].file_id)
-        product_id = AddEditItem.product_to_edit.id
+        product_id = EditItem.product_to_edit.id
         data = await state.get_data()
 
         try:
@@ -189,4 +189,4 @@ async def edit_item_image(
             )
         finally:
             await state.clear()
-            AddEditItem.product_to_edit = None
+            EditItem.product_to_edit = None

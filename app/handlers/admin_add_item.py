@@ -20,7 +20,7 @@ from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
 from keyboards.reply_keyboards import get_admin_keyboard
-from states import AddEditItem
+from states import AddItem
 
 logger = logging.getLogger(__name__)
 
@@ -46,10 +46,10 @@ async def add_item_btn_clicked(
     )
 
     logger.info('Add item process started.')
-    await state.set_state(AddEditItem.name)
+    await state.set_state(AddItem.name)
 
 
-@router.message(StateFilter(AddEditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
+@router.message(StateFilter(AddItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(
         message: Message,
         i18n: dict[str, str | Any],
@@ -61,12 +61,12 @@ async def back_cmd(
     current_state = await state.get_state()
     if current_state is None:
         return
-    if current_state == AddEditItem.name:
+    if current_state == AddItem.name:
         await message.answer(i18n['no_prev_step'])
         return
 
     previous = None
-    for step in AddEditItem.__all_states__:
+    for step in AddItem.__all_states__:
         if step.state == current_state:
             await state.set_state(previous)
             await message.answer(
@@ -76,7 +76,7 @@ async def back_cmd(
         previous = step
 
 
-@router.message(AddEditItem.name)
+@router.message(AddItem.name)
 async def add_product_name(
         message: Message,
         i18n: dict[str, str | Any],
@@ -87,7 +87,7 @@ async def add_product_name(
     if message.text:
         await state.update_data(name=message.text)
         await message.answer(text=i18n['add_product_description'])
-        await state.set_state(AddEditItem.description)
+        await state.set_state(AddItem.description)
     else:
         logger.warning('Wrong data received at the name step.')
         await message.answer(
@@ -95,7 +95,7 @@ async def add_product_name(
         )
 
 
-@router.message(AddEditItem.description)
+@router.message(AddItem.description)
 async def add_product_description(
         message: Message,
         i18n: dict[str, str | Any],
@@ -106,7 +106,7 @@ async def add_product_description(
     if message.text:
         await state.update_data(description=message.text)
         await message.answer(text=i18n['add_product_price'])
-        await state.set_state(AddEditItem.price)
+        await state.set_state(AddItem.price)
     else:
         logger.warning('Wrong data received at the description step.')
         await message.answer(
@@ -114,7 +114,7 @@ async def add_product_description(
         )
 
 
-@router.message(AddEditItem.price)
+@router.message(AddItem.price)
 async def add_product_price(
         message: Message, i18n:
         dict[str, str | Any],
@@ -125,7 +125,7 @@ async def add_product_price(
     if message.text:
         await state.update_data(price=message.text)
         await message.answer(text=i18n['add_product_image'])
-        await state.set_state(AddEditItem.image)
+        await state.set_state(AddItem.image)
     else:
         logger.warning('Wrong data received at the price step.')
         await message.answer(
@@ -133,7 +133,7 @@ async def add_product_price(
         )
 
 
-@router.message(AddEditItem.image)
+@router.message(AddItem.image)
 async def add_product_image(
         message: Message,
         i18n: dict[str, str | Any],
