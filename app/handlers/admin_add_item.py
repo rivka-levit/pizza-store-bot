@@ -19,6 +19,8 @@ from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
+from handlers.utils import make_step_back
+
 from keyboards.reply_keyboards import get_admin_keyboard
 from states import AddItem
 
@@ -54,26 +56,22 @@ async def back_cmd(
         message: Message,
         i18n: dict[str, str | Any],
         state: FSMContext,
-        add_item_texts: dict[str, str]
+        edit_item_texts: dict[str, str]
 ) -> None:
-    """Back FSM dialog one step backwards."""
+    """Handles `/back` command in FSM dialog when adding a product."""
 
     current_state = await state.get_state()
     if current_state is None:
         return
-    if current_state == AddItem.name:
-        await message.answer(i18n['no_prev_step'])
-        return
 
-    previous = None
-    for step in AddItem.__all_states__:
-        if step.state == current_state:
-            await state.set_state(previous)
-            await message.answer(
-                text=f"{i18n['/back']}\n{add_item_texts[previous.state]}"
-            )
-            return
-        previous = step
+    await make_step_back(
+        state_group=AddItem,
+        message=message,
+        i18n=i18n,
+        state=state,
+        edit_item_texts=edit_item_texts,
+        current_state=current_state
+    )
 
 
 @router.message(AddItem.name)

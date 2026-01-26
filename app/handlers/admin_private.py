@@ -20,7 +20,7 @@ from filters.user_role import IsAdmin
 from keyboards.inline_keyboards import get_edit_product_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 
-from states import AddEditItem
+from states import EditItem
 
 logger = logging.getLogger(__name__)
 
@@ -52,11 +52,11 @@ async def cancel_cmd(
     if current_state is None:
         return
 
-    if AddEditItem.product_to_edit:
-        AddEditItem.product_to_edit = None
+    if EditItem.product_to_edit:
+        EditItem.product_to_edit = None
 
     await state.clear()
-    logger.info('Add item process cancelled.')
+    logger.info('Add/edit item process cancelled.')
 
     await message.answer(
         text=i18n['/cancel'],

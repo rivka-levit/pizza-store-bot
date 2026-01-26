@@ -27,7 +27,7 @@ from handlers.user_private import router as user_private_router
 from i18n.translator import get_translations
 
 from middlewares.db import DatabaseSessionMiddleware
-from middlewares.fsm_step_texts import AddItemStepTexts, EditItemStepTexts
+from middlewares.fsm_step_texts import EditItemStepTexts
 from middlewares.i18n import TranslatorMiddleware
 
 logger = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ async def main():
     logger.info('Including middlewares...')
     dp.update.middleware(TranslatorMiddleware())
     dp.update.middleware(DatabaseSessionMiddleware(session_pool=session_maker))
-    admin_add_item_router.message.middleware(AddItemStepTexts())
+    admin_add_item_router.message.middleware(EditItemStepTexts())
     admin_edit_item_router.message.middleware(EditItemStepTexts())
 
     # Register routers

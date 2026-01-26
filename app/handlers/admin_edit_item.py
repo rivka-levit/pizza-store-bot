@@ -20,6 +20,8 @@ from filters.chat_types import ChatTypeFilter
 from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
+from handlers.utils import make_step_back
+
 from keyboards.reply_keyboards import get_admin_keyboard
 from states import EditItem
 
@@ -63,24 +65,20 @@ async def back_cmd(
         state: FSMContext,
         edit_item_texts: dict[str, str]
 ) -> None:
-    """Roll back FSM dialog one step backwards."""
+    """Handles `/back` command in FSM dialog when adding a product."""
 
     current_state = await state.get_state()
     if current_state is None:
         return
-    if current_state == EditItem.name:
-        await message.answer(i18n['no_prev_step'])
-        return
 
-    previous = None
-    for step in EditItem.__all_states__:
-        if step.state == current_state:
-            await state.set_state(previous)
-            await message.answer(
-                text=f"{i18n['/back']}\n{edit_item_texts[previous.state]}"
-            )
-            return
-        previous = step
+    await make_step_back(
+        state_group=EditItem,
+        message=message,
+        i18n=i18n,
+        state=state,
+        edit_item_texts=edit_item_texts,
+        current_state=current_state
+    )
 
 
 @router.message(StateFilter(EditItem.name))
@@ -163,12 +161,7 @@ async def edit_item_image(
 
     if message.text and message.text == '.':
         await state.update_data(image=EditItem.product_to_edit.image)
-    elif not message.photo:
-        logger.warning('Wrong data received at the image step.')
-        await message.answer(
-            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_image']}'
-        )
-    else:
+    elif message.photo:
         await state.update_data(image=message.photo[-1].file_id)
         product_id = EditItem.product_to_edit.id
         data = await state.get_data()
@@ -190,3 +183,9 @@ async def edit_item_image(
         finally:
             await state.clear()
             EditItem.product_to_edit = None
+
+    else:
+        logger.warning('Wrong data received at the image step.')
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_image']}'
+        )
