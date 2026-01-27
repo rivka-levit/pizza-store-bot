@@ -159,33 +159,35 @@ async def edit_item_image(
 ) -> None:
     """Edit product image in database."""
 
-    if message.text and message.text == '.':
-        await state.update_data(image=EditItem.product_to_edit.image)
-    elif message.photo:
-        await state.update_data(image=message.photo[-1].file_id)
-        product_id = EditItem.product_to_edit.id
-        data = await state.get_data()
-
-        try:
-            await orm_update_product(session, product_id, data)
-        except Exception as e:
-            logger.exception(f'Edit item process failed. Database error: {e}')
-            await message.answer(
-                text=i18n['add_db_error'].format(str(e)),
-                reply_markup=get_admin_keyboard(i18n=i18n)
-            )
-        else:
-            logger.info('Edit item process finished.')
-            await message.answer(
-                text=i18n['add_db_success'],
-                reply_markup=get_admin_keyboard(i18n=i18n)
-            )
-        finally:
-            await state.clear()
-            EditItem.product_to_edit = None
-
-    else:
+    if not message.photo and not (message.text and message.text == '.'):
         logger.warning('Wrong data received at the image step.')
         await message.answer(
             text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_image']}'
         )
+        return
+
+    if message.text and message.text == '.':
+        await state.update_data(image=EditItem.product_to_edit.image)
+    elif message.photo:
+        await state.update_data(image=message.photo[-1].file_id)
+
+    product_id = EditItem.product_to_edit.id
+    data = await state.get_data()
+
+    try:
+        await orm_update_product(session, product_id, data)
+    except Exception as e:
+        logger.exception(f'Edit item process failed. Database error: {e}')
+        await message.answer(
+            text=i18n['add_db_error'].format(str(e)),
+            reply_markup=get_admin_keyboard(i18n=i18n)
+        )
+    else:
+        logger.info('Edit item process finished.')
+        await message.answer(
+            text=i18n['edit_db_success'],
+            reply_markup=get_admin_keyboard(i18n=i18n)
+        )
+    finally:
+        await state.clear()
+        EditItem.product_to_edit = None
