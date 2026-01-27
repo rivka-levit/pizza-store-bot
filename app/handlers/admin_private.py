@@ -75,7 +75,7 @@ async def products_catalog(
         await message.answer_photo(
             product.image,
             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}',
+                    f'{i18n['price']}: {product.price:.2f} {i18n['currency']}',
             reply_markup=get_edit_product_keyboard(product, i18n)
         )
 

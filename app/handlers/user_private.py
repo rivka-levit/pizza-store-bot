@@ -46,7 +46,7 @@ async def menu_cmd(message: Message, i18n: dict[str, Any], session: AsyncSession
         await message.answer_photo(
             product.image,
             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}'
+                    f'{i18n['price']}: {product.price:.2f} {i18n['currency']}'
         )
 
 
