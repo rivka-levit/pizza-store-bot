@@ -39,12 +39,15 @@ config_file: Config = load_config()
 async def on_startup(engine: AsyncEngine):
     """Create db tables on start up the bot if they not exist."""
 
+    # async with engine.begin() as conn:  # noqa
+    #     await conn.run_sync(Base.metadata.drop_all)
+
     async with engine.begin() as conn:  # noqa
         await conn.run_sync(Base.metadata.create_all)
 
 
 async def on_shutdown():
-    pass
+    logger.info('Shutting down...')
 
 
 async def main():
