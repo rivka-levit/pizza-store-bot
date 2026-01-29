@@ -5,7 +5,6 @@ from aiogram.utils.formatting import as_list, as_marked_section, Bold
 RU: dict[str, str | Any] = {
     '/admin': 'Что хотите сделать?',
     '/start': 'Привет, я виртуальный помощник 👨‍💻',
-    '/help': 'Бот помогает заказать пиццу 🍕',
     '/menu': '<b>Вот меню:</b>',
     '/about': '<b>О нас:</b>',
     '/payment': as_marked_section(

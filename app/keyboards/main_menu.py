@@ -10,10 +10,6 @@ def get_main_menu_commands(i18n: dict[str, str]) -> list[BotCommand]:
             description=i18n.get('start_description')
         ),
         BotCommand(
-            command='/help',
-            description=i18n.get('help_description')
-        ),
-        BotCommand(
             command='/menu',
             description=i18n.get('menu_description')
         ),

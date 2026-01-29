@@ -20,22 +20,21 @@ router.message.filter(ChatTypeFilter(['private']))
 
 @router.message(CommandStart())
 async def start_cmd(message: Message, bot: Bot, i18n: dict[str, str]):
-    await bot.set_my_commands(
-        commands=get_main_menu_commands(i18n=i18n),
-        scope=BotCommandScopeChat(
-            type=BotCommandScopeType.CHAT,
-            chat_id=message.chat.id
-        )
-    )
+    # await bot.set_my_commands(
+    #     commands=get_main_menu_commands(i18n=i18n),
+    #     scope=BotCommandScopeChat(
+    #         type=BotCommandScopeType.CHAT,
+    #         chat_id=message.chat.id
+    #     )
+    # )
+    # await bot.delete_my_commands(scope=BotCommandScopeChat(
+    #     type=BotCommandScopeType.CHAT,
+    #     chat_id=message.chat.id
+    # ))
     await message.answer(
         text=i18n['/start'],
         reply_markup=get_start_kb(i18n=i18n)
     )
-
-
-@router.message(Command('help'))
-async def help_cmd(message: Message, i18n: dict[str, str]):
-    await message.answer(text=i18n['/help'])
 
 
 @router.message(ReplyButtonsFilter('menu'))
