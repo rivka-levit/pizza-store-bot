@@ -50,6 +50,7 @@ async def add_item_btn_clicked(
     logger.info('Add item process started.')
     await state.set_state(AddItem.name)
 
+# TODO: add item's category
 
 @router.message(StateFilter(AddItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(

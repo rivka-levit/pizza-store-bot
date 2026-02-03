@@ -5,7 +5,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 
-from database.models import Product, Banner
+from database.models import Product, Banner, Category
 
 
 # ===================== Banners (info pages) ============================
@@ -44,25 +44,44 @@ async def orm_get_info_pages(session: AsyncSession) -> Sequence[Banner]:
 
 # =========================== Categories ================================
 
+async def orm_get_categories(session: AsyncSession) -> Sequence[Category]:
+    """Return all the categories from database"""
+
+    query = select(Category)
+    result = await session.execute(query)
+    return result.scalars().all()
+
+
+async def orm_create_categories(session: AsyncSession, categories: list[str]):
+    """Create categories if not exist."""
+
+    query = select(Category)
+    result = await session.execute(query)
+    if result.first():
+        return
+    session.add_all([Category(name=name) for name in categories])
+    await session.commit()
+
 # ========================== Admin Panel ================================
 
-async def orm_add_product(session: AsyncSession, data: dict[str, Any]) -> None:
+async def orm_add_product(session: AsyncSession, data: dict[str, Any]):
     """Add product to database"""
 
     new_product = Product(
         name=data['name'],
         description=data['description'],
         price=float(data['price']),
-        image=data['image']
+        image=data['image'],
+        category_id=data['category_id']
     )
     session.add(new_product)
     await session.commit()
 
 
-async def orm_get_products(session: AsyncSession) -> Sequence[Product]:
+async def orm_get_products(session: AsyncSession, category_id: int) -> Sequence[Product]:
     """Get all the products from database"""
 
-    query = select(Product)
+    query = select(Product).where(Product.category_id == category_id)
     result = await session.execute(query)
     return result.scalars().all()
 
@@ -86,7 +105,8 @@ async def orm_update_product(
         name=data['name'],
         description=data['description'],
         price=float(data['price']),
-        image=data['image']
+        image=data['image'],
+        category_id=data['category_id']
     )
     await session.execute(query)
     await session.commit()

@@ -57,6 +57,7 @@ async def edit_item_btn_clicked(
     logger.info('Edit item process started.')
     await state.set_state(EditItem.name)
 
+# TODO: add item's category question
 
 @router.message(StateFilter(EditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(
