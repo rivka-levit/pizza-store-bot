@@ -30,6 +30,8 @@ from middlewares.db import DatabaseSessionMiddleware
 from middlewares.fsm_step_texts import EditItemStepTexts
 from middlewares.i18n import TranslatorMiddleware
 
+from database.orm_query import orm_create_categories
+
 logger = logging.getLogger(__name__)
 
 
@@ -70,6 +72,11 @@ async def main():
         class_=AsyncSession,
         expire_on_commit=False
     )
+
+    # Create categories
+    async with session_maker() as session:
+        await orm_create_categories(session, config.store.categories)
+
 
     # Create Redis storage
     storage = RedisStorage(

@@ -44,11 +44,17 @@ class LogConfig:
 
 
 @dataclass
+class StoreConfig:
+    categories: list[str]
+
+
+@dataclass
 class Config:
     bot: BotConfig
     db: DatabaseConfig
     redis: RedisConfig
     log: LogConfig
+    store: StoreConfig
 
 
 def load_config(path: str | None = None) -> Config:
@@ -95,11 +101,16 @@ def load_config(path: str | None = None) -> Config:
         stream=sys.stdout
     )
 
+    store_settings = StoreConfig(
+        categories=os.environ.get('STORE_CATEGORIES').split(',')
+    )
+
     logger.info('Configuration loaded successfully')
 
     return Config(
         bot=bot,
         db=db,
         redis=redis,
-        log=log_settings
+        log=log_settings,
+        store=store_settings
     )

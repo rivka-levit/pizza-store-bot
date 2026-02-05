@@ -5,6 +5,7 @@ from aiogram.utils.formatting import as_list, as_marked_section, Bold
 RU: dict[str, str | Any] = {
     '/admin': 'Что хотите сделать?',
     '/start': 'Привет, я виртуальный помощник 👨‍💻',
+    '/main': 'Добро пожаловать!',
     '/menu': '<b>Вот меню:</b>',
     '/about': '<b>О нас:</b>',
     '/payment': as_marked_section(
@@ -30,6 +31,7 @@ RU: dict[str, str | Any] = {
         ),
         sep='\n------------------\n'
     ).as_html(),
+    '/catalog': 'Категории: ',
     '/cancel': 'Действия отменены',
     '/back': 'Oк, вы вернулись к прошлому шагу',
     'cancel_fsm': {'q', 'отмена', 'выход'},
@@ -74,4 +76,8 @@ RU: dict[str, str | Any] = {
     'edit_product_description': 'Введите новое описание товара',
     'edit_product_price': 'Введите новую стоимость товара',
     'edit_product_image': 'Загрузите новое изображение товара',
+
+    # Categories
+    'food': 'Еда',
+    'drink': 'Напитки',
 }
