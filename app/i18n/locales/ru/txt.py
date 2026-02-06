@@ -5,17 +5,17 @@ from aiogram.utils.formatting import as_list, as_marked_section, Bold
 RU: dict[str, str | Any] = {
     '/admin': 'Что хотите сделать?',
     '/start': 'Привет, я виртуальный помощник 👨‍💻',
-    '/main': 'Добро пожаловать!',
+    'main': 'Добро пожаловать!',
     '/menu': '<b>Вот меню:</b>',
-    '/about': '<b>О нас:</b>',
-    '/payment': as_marked_section(
+    'about': '<b>О нас:</b>',
+    'payment': as_marked_section(
         Bold('Варианты оплаты:'),
         'Картой в боте',
         'При получении карта/кэш',
         'В заведении',
         marker='✅ '
     ).as_html(),
-    '/shipping': as_list(
+    'shipping': as_list(
         as_marked_section(
             Bold('Варианты доставки/заказа:'),
             'Курьер',
@@ -31,7 +31,8 @@ RU: dict[str, str | Any] = {
         ),
         sep='\n------------------\n'
     ).as_html(),
-    '/catalog': 'Категории: ',
+    'catalog': 'Категории: ',
+    'cart': 'В корзине пока нет товаров',
     '/cancel': 'Действия отменены',
     '/back': 'Oк, вы вернулись к прошлому шагу',
     'cancel_fsm': {'q', 'отмена', 'выход'},

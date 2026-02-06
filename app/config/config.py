@@ -46,6 +46,7 @@ class LogConfig:
 @dataclass
 class StoreConfig:
     categories: list[str]
+    pages: list[str]
 
 
 @dataclass
@@ -102,7 +103,8 @@ def load_config(path: str | None = None) -> Config:
     )
 
     store_settings = StoreConfig(
-        categories=os.environ.get('STORE_CATEGORIES').split(',')
+        categories=os.environ.get('STORE_CATEGORIES').split(','),
+        pages=os.environ.get('PAGE_NAMES').split(',')
     )
 
     logger.info('Configuration loaded successfully')

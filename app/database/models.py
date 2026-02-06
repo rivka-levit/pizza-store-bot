@@ -13,13 +13,12 @@ class Base(DeclarativeBase):
     )
 
 
-class Banner(Base):
+class InfoPage(Base):
     __tablename__ = 'banner'
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
     image: Mapped[str] = mapped_column(String(150), nullable=True)
-    description: Mapped[str] = mapped_column(Text, nullable=True)
 
 
 class Category(Base):

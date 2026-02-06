@@ -5,40 +5,40 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 
-from database.models import Product, Banner, Category, User
+from database.models import Product, InfoPage, Category, User
 
 
 # ===================== Banners (info pages) ============================
 
-async def orm_add_banner_description(session: AsyncSession, data: dict) -> None:
-    query = select(Banner)
+async def orm_add_info_pages(session: AsyncSession, pages: list[str]) -> None:
+    query = select(InfoPage)
     result = await session.execute(query)
     if result.first():
         return
     session.add_all(
-        [Banner(name=name, description=descr) for name, descr in data.items()]
+        [InfoPage(name=name) for name in pages]
     )
     await session.commit()
 
 
-async def orm_change_banner_image(
+async def orm_change_page_image(
         session: AsyncSession,
         name: str,
         image: str
 ) -> None:
-    query = update(Banner).where(Banner.name == name).values(image=image)
+    query = update(InfoPage).where(InfoPage.name == name).values(image=image)
     await session.execute(query)
     await session.commit()
 
 
-async def orm_get_banner(session: AsyncSession, page_name: str) -> Banner:
-    query = select(Banner).where(Banner.name == page_name)
+async def orm_get_info_page(session: AsyncSession, page_name: str) -> InfoPage:
+    query = select(InfoPage).where(InfoPage.name == page_name)
     result = await session.execute(query)
     return result.scalars().first()
 
 
-async def orm_get_info_pages(session: AsyncSession) -> Sequence[Banner]:
-    query = select(Banner)
+async def orm_get_info_pages(session: AsyncSession) -> Sequence[InfoPage]:
+    query = select(InfoPage)
     result = await session.execute(query)
     return result.scalars().all()
 
