@@ -3,9 +3,12 @@ from typing import Any
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.models import Product
+from callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory, CategoryCallbackFactory
+
+from database.models import Product, Category
+from database.orm_query import orm_get_categories
 
 
 def inline_keyboard_factory(
@@ -39,5 +42,18 @@ def get_edit_product_keyboard(
                                                 product_id=product.id, 
                                                 product_name=product.name
                                             ).pack()}'
+    }
+    return inline_keyboard_factory(buttons=buttons)
+
+
+def get_categories_keyboard(
+        categories: list[Category],
+        i18n: dict[str, Any]
+) -> InlineKeyboardMarkup:
+    """Keyboard to choose the category."""
+
+    buttons = {
+        i18n[category.name]: CategoryCallbackFactory(category_id=category.id).pack()
+        for category in categories
     }
     return inline_keyboard_factory(buttons=buttons)

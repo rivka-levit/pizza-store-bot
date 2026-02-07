@@ -5,6 +5,7 @@ from database.models import Product
 
 class AddItem(StatesGroup):
     name = State()
+    category = State()
     description = State()
     price = State()
     image = State()
@@ -12,6 +13,7 @@ class AddItem(StatesGroup):
 
 class EditItem(StatesGroup):
     name = State()
+    category = State()
     description = State()
     price = State()
     image = State()

@@ -1,1 +1,5 @@
-from .callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory
+from .callbacks import (
+    DeleteProductCallbackFactory,
+    EditProductCallbackFactory,
+    CategoryCallbackFactory
+)

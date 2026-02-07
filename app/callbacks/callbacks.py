@@ -9,3 +9,7 @@ class EditProductCallbackFactory(CallbackData, prefix='edit'):
 class DeleteProductCallbackFactory(CallbackData, prefix='del'):
     product_id: int
     product_name: str
+
+
+class CategoryCallbackFactory(CallbackData, prefix='cat'):
+    category_id: int
