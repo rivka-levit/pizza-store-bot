@@ -68,6 +68,7 @@ RU: dict[str, str | Any] = {
 
     # Add product texts
     'add_product_name': 'Введите название товара',
+    'add_product_category': 'Выберите категорию товара',
     'add_product_description': 'Введите описание товара',
     'add_product_price': 'Введите стоимость товара',
     'add_product_image': 'Загрузите изображение товара',

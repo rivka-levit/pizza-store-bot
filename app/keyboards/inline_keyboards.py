@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any
 
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
@@ -47,7 +48,7 @@ def get_edit_product_keyboard(
 
 
 def get_categories_keyboard(
-        categories: list[Category],
+        categories: Sequence[Category],
         i18n: dict[str, Any]
 ) -> InlineKeyboardMarkup:
     """Keyboard to choose the category."""

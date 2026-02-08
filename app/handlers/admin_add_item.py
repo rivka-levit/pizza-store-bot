@@ -8,11 +8,13 @@ from typing import Any
 from aiogram import Router
 from aiogram.filters import Command, or_f, StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, ReplyKeyboardRemove, CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_add_product
+from database.orm_query import orm_add_product, orm_get_categories
+
+from callbacks import CategoryCallbackFactory
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
@@ -21,6 +23,7 @@ from filters.user_role import IsAdmin
 
 from handlers.utils import make_step_back
 
+from keyboards.inline_keyboards import get_categories_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 from states import AddItem
 
@@ -50,7 +53,6 @@ async def add_item_btn_clicked(
     logger.info('Add item process started.')
     await state.set_state(AddItem.name)
 
-# TODO: add item's category
 
 @router.message(StateFilter(AddItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(
@@ -79,19 +81,56 @@ async def back_cmd(
 async def add_product_name(
         message: Message,
         i18n: dict[str, str | Any],
+        session: AsyncSession,
         state: FSMContext
 ) -> None:
     """Add product name to state dictionary and request product description."""
 
     if message.text:
+        categories = await orm_get_categories(session=session)
         await state.update_data(name=message.text)
-        await message.answer(text=i18n['add_product_description'])
-        await state.set_state(AddItem.description)
+        await message.answer(
+            text=i18n['add_product_category'],
+            reply_markup=get_categories_keyboard(categories=categories, i18n=i18n)
+        )
+        await state.set_state(AddItem.category)
     else:
         logger.warning('Wrong data received at the name step.')
         await message.answer(
             text=f'{i18n['wrong_data_received']}\n{i18n['add_product_name']}'
         )
+
+
+@router.callback_query(AddItem.category, CategoryCallbackFactory.filter())
+async def add_product_category(
+        callback: CallbackQuery,
+        callback_data: CategoryCallbackFactory,
+        i18n: dict[str, Any],
+        state: FSMContext
+) -> None:
+    """Add product category to state dictionary and request product description."""
+
+    await callback.answer()
+    await state.update_data(category=int(callback_data.category_id))
+    await callback.message.answer(text=i18n['add_product_description'])
+    await state.set_state(AddItem.description)
+
+
+@router.callback_query(AddItem.category, ~CategoryCallbackFactory.filter())
+async def add_wrong_category_data(
+        callback: CallbackQuery,
+        i18n: dict[str, Any],
+        session: AsyncSession
+) -> None:
+    """Wrong callback query received at the category step."""
+
+    await callback.answer()
+    logger.warning('Wrong data received at the category step.')
+    categories = await orm_get_categories(session=session)
+    await callback.message.answer(
+        text=f'{i18n['wrong_data_received']}\n{i18n['add_product_category']}',
+        reply_markup=get_categories_keyboard(categories, i18n)
+    )
 
 
 @router.message(AddItem.description)
