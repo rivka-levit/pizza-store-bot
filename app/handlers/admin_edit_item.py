@@ -12,9 +12,9 @@ from aiogram.types import CallbackQuery, Message, ReplyKeyboardRemove
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_get_product, orm_update_product
+from database.orm_query import orm_get_product, orm_update_product, orm_get_categories
 
-from callbacks import EditProductCallbackFactory
+from callbacks import EditProductCallbackFactory, CategoryCallbackFactory
 
 from filters.chat_types import ChatTypeFilter
 from filters.text_filters import TextEqualFilter
@@ -22,6 +22,7 @@ from filters.user_role import IsAdmin
 
 from handlers.utils import make_step_back
 
+from keyboards.inline_keyboards import get_categories_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 from states import EditItem
 
@@ -57,7 +58,6 @@ async def edit_item_btn_clicked(
     logger.info('Edit item process started.')
     await state.set_state(EditItem.name)
 
-# TODO: add item's category question
 
 @router.message(StateFilter(EditItem), or_f(Command('back'), TextEqualFilter('back_fsm')))
 async def back_cmd(
@@ -86,9 +86,12 @@ async def back_cmd(
 async def edit_item_name(
         message: Message,
         i18n: dict[str, str | Any],
+        session: AsyncSession,
         state: FSMContext
 ) -> None:
     """Edit product name in database or skip the step."""
+
+    categories = await orm_get_categories(session)
 
     if not message.text:
         logger.warning('Wrong data received at the name step.')
@@ -97,12 +100,67 @@ async def edit_item_name(
         )
     elif message.text == '.':
         await state.update_data(name=EditItem.product_to_edit.name)
-        await message.answer(i18n['edit_product_description'])
-        await state.set_state(EditItem.description)
+        await message.answer(
+            i18n['edit_product_category'],
+            reply_markup=get_categories_keyboard(categories, i18n)
+        )
+        await state.set_state(EditItem.category)
     else:
         await state.update_data(name=message.text)
+        await message.answer(text=i18n['edit_product_category'])
+        await state.set_state(EditItem.category)
+
+
+@router.callback_query(EditItem.category, CategoryCallbackFactory.filter())
+async def add_product_category(
+        callback: CallbackQuery,
+        callback_data: CategoryCallbackFactory,
+        i18n: dict[str, Any],
+        state: FSMContext
+) -> None:
+    """Edit product category and request product description."""
+
+    await callback.answer()
+    await state.update_data(category=int(callback_data.category_id))
+    await callback.message.answer(text=i18n['edit_product_description'])
+    await state.set_state(EditItem.description)
+
+
+@router.callback_query(EditItem.category, ~CategoryCallbackFactory.filter())
+async def add_wrong_category_data(
+        callback: CallbackQuery,
+        i18n: dict[str, Any],
+        session: AsyncSession
+) -> None:
+    """Wrong callback query received at the category step."""
+
+    await callback.answer()
+    logger.warning('Wrong data received at the category step.')
+    categories = await orm_get_categories(session=session)
+    await callback.message.answer(
+        text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_category']}',
+        reply_markup=get_categories_keyboard(categories, i18n)
+    )
+
+
+@router.message(EditItem.category)
+async def skip_edit_category(
+        message: Message,
+        i18n: dict[str, Any],
+        session: AsyncSession,
+        state: FSMContext
+) -> None:
+    """Skip edit category and request product description."""
+
+    if message.text and message.text == '.':
         await message.answer(text=i18n['edit_product_description'])
         await state.set_state(EditItem.description)
+    else:
+        categories = await orm_get_categories(session=session)
+        await message.answer(
+            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_category']}',
+            reply_markup=get_categories_keyboard(categories, i18n)
+        )
 
 
 @router.message(StateFilter(EditItem.description))

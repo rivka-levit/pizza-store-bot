@@ -72,7 +72,7 @@ async def orm_add_product(session: AsyncSession, data: dict[str, Any]):
         description=data['description'],
         price=float(data['price']),
         image=data['image'],
-        category_id=data['category_id']
+        category_id=data['category']
     )
     session.add(new_product)
     await session.commit()
@@ -106,7 +106,7 @@ async def orm_update_product(
         description=data['description'],
         price=float(data['price']),
         image=data['image'],
-        category_id=data['category_id']
+        category_id=data['category']
     )
     await session.execute(query)
     await session.commit()

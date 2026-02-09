@@ -75,6 +75,7 @@ RU: dict[str, str | Any] = {
 
     # Edit product texts
     'edit_product_name': 'Введите новое название товара',
+    'edit_product_category': 'Выберите новую категорию товара',
     'edit_product_description': 'Введите новое описание товара',
     'edit_product_price': 'Введите новую стоимость товара',
     'edit_product_image': 'Загрузите новое изображение товара',
