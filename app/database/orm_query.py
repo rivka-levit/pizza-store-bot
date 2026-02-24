@@ -67,12 +67,16 @@ async def orm_create_categories(session: AsyncSession, categories: list[str]):
 async def orm_add_product(session: AsyncSession, data: dict[str, Any]):
     """Add product to database"""
 
+    query = select(Category).where(Category.id == data['category'])
+    result = await session.execute(query)
+    category = result.scalars().one()
+
     new_product = Product(
         name=data['name'],
         description=data['description'],
         price=float(data['price']),
         image=data['image'],
-        category_id=data['category']
+        category_id=category.id
     )
     session.add(new_product)
     await session.commit()

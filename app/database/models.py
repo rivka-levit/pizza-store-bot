@@ -1,5 +1,3 @@
-from typing import Set
-
 from sqlalchemy import DateTime, Integer, ForeignKey, Numeric, String, Text, func
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, relationship
 
@@ -26,7 +24,10 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     name: Mapped[str] = mapped_column(String(150), nullable=False)
-    products: Mapped[Set['Product']] = relationship('Product', back_populates='category')
+    products: Mapped[set['Product']] = relationship(
+        'Product',
+        back_populates='category'
+    )
 
 
 class Product(Base):
@@ -38,11 +39,15 @@ class Product(Base):
     price: Mapped[float] = mapped_column(Numeric(5,2), nullable=False)
     image: Mapped[str] = mapped_column(String(150))
     category_id: Mapped[int] = mapped_column(
-        ForeignKey('category.id', ondelete='CASCADE'),
+        ForeignKey('categories.id', ondelete='CASCADE'),
         nullable=False
     )
-    category: Mapped['Category'] = relationship('Category', back_populates='products')
-    carts: Mapped[Set['Cart']] = relationship('Cart', back_populates='product')
+    category: Mapped['Category'] = relationship(
+        'Category',
+        back_populates='products',
+        foreign_keys=[category_id]
+    )
+    carts: Mapped[set['Cart']] = relationship('Cart', back_populates='product')
 
 
 class User(Base):
@@ -54,7 +59,7 @@ class User(Base):
     last_name: Mapped[str] = mapped_column(String(150), nullable=True)
     phone: Mapped[str] = mapped_column(String(13), nullable=True)
 
-    carts: Mapped[Set['Cart']] = relationship('Cart', back_populates='user')
+    carts: Mapped[set['Cart']] = relationship('Cart', back_populates='user')
 
 
 class Cart(Base):
@@ -62,11 +67,11 @@ class Cart(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     user_id: Mapped[int] = mapped_column(
-        ForeignKey('user.tg_id', ondelete='CASCADE'),
+        ForeignKey('users.tg_id', ondelete='CASCADE'),
         nullable=False
     )
     product_id: Mapped[int] = mapped_column(
-        ForeignKey('product.id', ondelete='CASCADE'),
+        ForeignKey('products.id', ondelete='CASCADE'),
         nullable=False
     )
     quantity: Mapped[int] = mapped_column(Integer, default=1, nullable=False)

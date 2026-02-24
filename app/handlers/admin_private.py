@@ -64,20 +64,20 @@ async def cancel_cmd(
     )
 
 
-@router.message(ReplyButtonsFilter('catalog'))
-async def products_catalog(
-        message: Message,
-        i18n: dict[str, str | Any],
-        session: AsyncSession
-) -> None:
-    await message.answer(text=i18n['catalog_answer'])
-    for product in await orm_get_products(session):
-        await message.answer_photo(
-            product.image,
-            caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-                    f'{i18n['price']}: {product.price:.2f} {i18n['currency']}',
-            reply_markup=get_edit_product_keyboard(product, i18n)
-        )
+# @router.message(ReplyButtonsFilter('catalog'))
+# async def products_catalog(
+#         message: Message,
+#         i18n: dict[str, str | Any],
+#         session: AsyncSession
+# ) -> None:
+#     await message.answer(text=i18n['catalog_answer'])
+#     for product in await orm_get_products(session):
+#         await message.answer_photo(
+#             product.image,
+#             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
+#                     f'{i18n['price']}: {product.price:.2f} {i18n['currency']}',
+#             reply_markup=get_edit_product_keyboard(product, i18n)
+#         )
 
 
 @router.callback_query(DeleteProductCallbackFactory.filter())

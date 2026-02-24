@@ -38,7 +38,11 @@ logger = logging.getLogger(__name__)
 config_file: Config = load_config()
 
 
-async def on_startup(engine: AsyncEngine):
+async def on_startup(
+        engine: AsyncEngine,
+        session_maker: async_sessionmaker,
+        config: Config
+) -> None:
     """Create db tables on start up the bot if they not exist."""
 
     # async with engine.begin() as conn:  # noqa
@@ -46,6 +50,11 @@ async def on_startup(engine: AsyncEngine):
 
     async with engine.begin() as conn:  # noqa
         await conn.run_sync(Base.metadata.create_all)
+
+    # Create categories and pages
+    async with session_maker() as session:
+        await orm_create_categories(session, config.store.categories)
+        await orm_add_info_pages(session, config.store.pages)
 
 
 async def on_shutdown():
@@ -73,10 +82,10 @@ async def main():
         expire_on_commit=False
     )
 
-    # Create categories and pages
-    async with session_maker() as session:
-        await orm_create_categories(session, config.store.categories)
-        await orm_add_info_pages(session, config.store.pages)
+    # # Create categories and pages
+    # async with session_maker() as session:
+    #     await orm_create_categories(session, config.store.categories)
+    #     await orm_add_info_pages(session, config.store.pages)
 
 
     # Create Redis storage
@@ -129,6 +138,8 @@ async def main():
             translations=translations,
             locales=locales,
             engine=engine,
+            session_maker=session_maker,
+            config=config
         )
     except Exception as e:
         logger.exception(e)
