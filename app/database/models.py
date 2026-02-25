@@ -76,5 +76,13 @@ class Cart(Base):
     )
     quantity: Mapped[int] = mapped_column(Integer, default=1, nullable=False)
 
-    user: Mapped['User'] = relationship('User', back_populates='carts')
-    product: Mapped['Product'] = relationship('Product', back_populates='carts')
+    user: Mapped['User'] = relationship(
+        'User',
+        back_populates='carts',
+        foreign_keys=[user_id]
+    )
+    product: Mapped['Product'] = relationship(
+        'Product',
+        back_populates='carts',
+        foreign_keys=[product_id]
+    )
