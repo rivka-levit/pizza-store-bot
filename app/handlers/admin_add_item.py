@@ -154,14 +154,19 @@ async def add_product_description(
 
 @router.message(AddItem.price)
 async def add_product_price(
-        message: Message, i18n:
-        dict[str, str | Any],
+        message: Message,
+        i18n: dict[str, str | Any],
         state: FSMContext
 ) -> None:
     """Add product price to state dictionary and request product image."""
 
-    if message.text:
-        await state.update_data(price=message.text)
+    try:
+        price = float(message.text.strip().replace(',', '.'))
+    except ValueError:
+        price = None
+
+    if price:
+        await state.update_data(price=price)
         await message.answer(text=i18n['add_product_image'])
         await state.set_state(AddItem.image)
     else:

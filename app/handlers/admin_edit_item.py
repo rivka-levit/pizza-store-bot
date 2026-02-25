@@ -194,19 +194,25 @@ async def edit_item_price(
 ) -> None:
     """Edit product price in database or skip the step."""
 
-    if not message.text:
-        logger.warning('Wrong data received at the name step.')
-        await message.answer(
-            text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_price']}'
-        )
-    elif message.text == '.':
+    if message.text and message.text == '.':
         await state.update_data(price=EditItem.product_to_edit.price)
         await message.answer(i18n['edit_product_image'])
         await state.set_state(EditItem.image)
     else:
-        await state.update_data(price=message.text)
-        await message.answer(text=i18n['edit_product_image'])
-        await state.set_state(EditItem.image)
+        try:
+            price = float(message.text.strip().replace(',', '.'))
+        except ValueError:
+            price = None
+
+        if price:
+            await state.update_data(price=message.text)
+            await message.answer(text=i18n['edit_product_image'])
+            await state.set_state(EditItem.image)
+        else:
+            logger.warning('Wrong data received at the name step.')
+            await message.answer(
+                text=f'{i18n['wrong_data_received']}\n{i18n['edit_product_price']}'
+            )
 
 
 @router.message(StateFilter(EditItem.image))
