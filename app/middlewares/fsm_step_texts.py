@@ -21,6 +21,7 @@ class EditItemStepTexts(BaseMiddleware):
         i18n = data['i18n']
         texts = {
                 'name': f'{i18n['edit_product_name']}',
+                'category': f'{i18n['edit_product_category']}',
                 'description': f'{i18n['edit_product_description']}',
                 'price': f'{i18n['edit_product_price']}',
                 'image': f'{i18n['edit_product_image']}'
