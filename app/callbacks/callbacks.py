@@ -13,3 +13,8 @@ class DeleteProductCallbackFactory(CallbackData, prefix='del'):
 
 class CategoryCallbackFactory(CallbackData, prefix='cat'):
     category_id: int
+
+
+class PageCallbackFactory(CallbackData, prefix='page'):
+    id: int
+    name: str

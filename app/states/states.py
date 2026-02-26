@@ -19,3 +19,8 @@ class EditItem(StatesGroup):
     image = State()
 
     product_to_edit: Product | None = None
+
+
+class AddBanner(StatesGroup):
+    page_id = State()
+    image = State()

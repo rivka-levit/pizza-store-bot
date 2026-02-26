@@ -4,12 +4,14 @@ from typing import Any
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from sqlalchemy.ext.asyncio import AsyncSession
+from callbacks import (
+    DeleteProductCallbackFactory,
+    EditProductCallbackFactory,
+    CategoryCallbackFactory,
+    PageCallbackFactory
+)
 
-from callbacks import DeleteProductCallbackFactory, EditProductCallbackFactory, CategoryCallbackFactory
-
-from database.models import Product, Category
-from database.orm_query import orm_get_categories
+from database.models import Product, Category, InfoPage
 
 
 def inline_keyboard_factory(
@@ -58,3 +60,20 @@ def get_categories_keyboard(
         for category in categories
     }
     return inline_keyboard_factory(buttons=buttons)
+
+
+def page_choice_keyboard(
+        pages: Sequence[InfoPage],
+        i18n: dict[str, Any]
+) -> InlineKeyboardMarkup:
+    """Keyboard to choose a page."""
+
+    buttons = dict()
+
+    for page in pages:
+        buttons[f'{i18n[page.name]}_name'] = PageCallbackFactory(
+            id=page.id,
+            name=page.name
+        ).pack()
+
+    return inline_keyboard_factory(buttons=buttons, sizes=(3,))

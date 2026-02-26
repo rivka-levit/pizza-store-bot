@@ -51,6 +51,7 @@ RU: dict[str, str | Any] = {
     'input_field_placeholder': 'Что Вас интересует?',
     'btn_add_item': 'Добавить товар',
     'btn_catalog': 'Ассортимент',
+    'btn_add_edit_banner': 'Добавить/Изменить баннер',
     'placeholder_admin_kb': 'Выберите действие...',
     'catalog_answer': Bold('Вот список товаров:').as_html(),
     'wrong_data_received': 'Вы ввели недопустимые данные.',
@@ -83,4 +84,13 @@ RU: dict[str, str | Any] = {
     # Categories
     'food': 'Еда',
     'drink': 'Напитки',
+
+    # InfoPages
+    'main_name': 'Главная',
+    'about_name': 'О нас',
+    'payment_name': 'Оплата',
+    'shipping_name': 'Доставка',
+    'catalog_name': 'Каталог',
+    'cart_name': 'Корзина',
+    'choose_page_text': 'Выберите страницу, для которой редактируется изображение',
 }
