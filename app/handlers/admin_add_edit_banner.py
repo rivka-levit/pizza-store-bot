@@ -5,9 +5,11 @@ from typing import Any
 from aiogram import Router
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
-from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram.types import Message, CallbackQuery
 
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from callbacks import PageCallbackFactory
 
 from database.models import InfoPage
 from database.orm_query import orm_get_info_pages
@@ -48,3 +50,26 @@ async def add_edit_banner(
         ),
     )
     await state.set_state(AddBanner.page_id)
+
+
+@router.callback_query(StateFilter(AddBanner.page_id), PageCallbackFactory.filter())
+async def choose_page_step(
+        query: CallbackQuery,
+        callback_data: PageCallbackFactory,
+        i18n: dict[str, Any],
+        state: FSMContext,
+):
+    """Handles choice page button has been clicked."""
+
+    await query.answer()
+    await state.update_data(page_id=callback_data.id)
+    await state.set_state(AddBanner.image)
+    await query.message.edit_text(text=i18n['add_banner_image'])
+
+
+@router.message(StateFilter(AddBanner.page_id))
+async def wrong_page_data(message: Message, i18n: dict[str, Any]):
+    """Handles wrong message on page choice step."""
+
+    await message.answer(text=i18n['wrong_data_received'])
+    return

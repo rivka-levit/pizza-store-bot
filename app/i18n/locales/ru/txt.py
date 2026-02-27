@@ -93,4 +93,5 @@ RU: dict[str, str | Any] = {
     'catalog_name': 'Каталог',
     'cart_name': 'Корзина',
     'choose_page_text': 'Выберите страницу, для которой редактируется изображение',
+    'add_banner_image': 'Отправьте фото баннера.'
 }
