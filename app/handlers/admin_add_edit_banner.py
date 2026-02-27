@@ -2,7 +2,7 @@ import logging
 from collections.abc import Sequence
 from typing import Any
 
-from aiogram import Router
+from aiogram import Router, F
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
@@ -12,7 +12,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from callbacks import PageCallbackFactory
 
 from database.models import InfoPage
-from database.orm_query import orm_get_info_pages
+from database.orm_query import orm_get_info_pages, orm_change_page_image
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
@@ -70,6 +70,32 @@ async def choose_page_step(
 @router.message(StateFilter(AddBanner.page_id))
 async def wrong_page_data(message: Message, i18n: dict[str, Any]):
     """Handles wrong message on page choice step."""
+
+    await message.answer(text=i18n['wrong_data_received'])
+    return
+
+
+@router.message(StateFilter(AddBanner.image, F.photo))
+async def add_banner_image_step(
+        message: Message,
+        i18n: dict[str, Any],
+        session: AsyncSession,
+        state: FSMContext
+):
+    """Handles adding banner image to database."""
+
+    image_id = message.photo[-1].file_id
+    data = await state.get_data()
+    page_id = data['page_id']
+
+    await orm_change_page_image(session, page_id, image_id)
+    await message.answer(text=i18n['add_banner_success'])
+    await state.clear()
+
+
+@router.message(StateFilter(AddBanner.image))
+async def wrong_msg_on_image_step(message: Message, i18n: dict[str, Any]):
+    """Handles wrong message on adding banner image step."""
 
     await message.answer(text=i18n['wrong_data_received'])
     return
