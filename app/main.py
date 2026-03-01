@@ -18,6 +18,7 @@ from sqlalchemy.ext.asyncio import (
 from config import Config, load_config
 from database.models import Base
 
+from handlers.admin_add_edit_banner import router as admin_add_edit_banner
 from handlers.admin_add_item import router as admin_add_item_router
 from handlers.admin_edit_item import router as admin_edit_item_router
 from handlers.admin_private import router as admin_private_router
@@ -82,12 +83,6 @@ async def main():
         expire_on_commit=False
     )
 
-    # # Create categories and pages
-    # async with session_maker() as session:
-    #     await orm_create_categories(session, config.store.categories)
-    #     await orm_add_info_pages(session, config.store.pages)
-
-
     # Create Redis storage
     storage = RedisStorage(
         redis=Redis(
@@ -120,6 +115,7 @@ async def main():
     dp.include_routers(
         admin_add_item_router,
         admin_edit_item_router,
+        admin_add_edit_banner,
         admin_private_router,
         user_private_router,
         user_group_router

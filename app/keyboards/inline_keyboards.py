@@ -71,7 +71,7 @@ def page_choice_keyboard(
     buttons = dict()
 
     for page in pages:
-        buttons[f'{i18n[page.name]}_name'] = PageCallbackFactory(
+        buttons[i18n[f'{page.name}_name']] = PageCallbackFactory(
             id=page.id,
             name=page.name
         ).pack()

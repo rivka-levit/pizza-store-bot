@@ -3,7 +3,7 @@ from collections.abc import Sequence
 from typing import Any
 
 from aiogram import Router, F
-from aiogram.filters import StateFilter
+from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, CallbackQuery
 
@@ -29,6 +29,7 @@ router = Router()
 router.message.filter(
     ChatTypeFilter(['private']),
     IsAdmin(),
+    ~Command(commands=['cancel']),
     ~TextEqualFilter('cancel_fsm')
 )
 
