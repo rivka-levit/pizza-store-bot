@@ -84,6 +84,7 @@ RU: dict[str, str | Any] = {
     # Categories
     'food': 'Еда',
     'drink': 'Напитки',
+    'choose_category': 'Выберите категорию',
 
     # InfoPages
     'main_name': 'Главная',

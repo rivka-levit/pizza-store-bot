@@ -10,14 +10,14 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import ObjectDeletedError, NoResultFound
 
 from callbacks import DeleteProductCallbackFactory
-from database.orm_query import orm_get_products, orm_delete_product
+from database.orm_query import orm_get_categories, orm_get_products, orm_delete_product
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 from filters.text_filters import TextEqualFilter
 from filters.user_role import IsAdmin
 
-from keyboards.inline_keyboards import get_edit_product_keyboard
+from keyboards.inline_keyboards import get_categories_keyboard, get_edit_product_keyboard
 from keyboards.reply_keyboards import get_admin_keyboard
 
 from states import EditItem
@@ -56,11 +56,27 @@ async def cancel_cmd(
         EditItem.product_to_edit = None
 
     await state.clear()
-    logger.info('Add/edit item process cancelled.')
+    logger.info('FSM process cancelled.')
 
     await message.answer(
         text=i18n['/cancel'],
         reply_markup=get_admin_keyboard(i18n=i18n)
+    )
+
+
+@router.message(ReplyButtonsFilter('catalog'))
+async def products_catalog_category_choice(
+        message: Message,
+        i18n: dict[str, str | Any],
+        session: AsyncSession
+) -> None:
+    """Handles catalog button clicked."""
+
+    categories = await orm_get_categories(session)
+
+    await message.answer(
+        text=i18n['choose_category'],
+        reply_markup=get_categories_keyboard(categories, i18n)
     )
 
 
