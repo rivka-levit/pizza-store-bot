@@ -9,7 +9,7 @@ from aiogram.types import Message, CallbackQuery
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm.exc import ObjectDeletedError, NoResultFound
 
-from callbacks import DeleteProductCallbackFactory
+from callbacks import CategoryCallbackFactory, DeleteProductCallbackFactory
 from database.orm_query import orm_get_categories, orm_get_products, orm_delete_product
 
 from filters.chat_types import ChatTypeFilter
@@ -80,20 +80,22 @@ async def products_catalog_category_choice(
     )
 
 
-# @router.message(ReplyButtonsFilter('catalog'))
-# async def products_catalog(
-#         message: Message,
-#         i18n: dict[str, str | Any],
-#         session: AsyncSession
-# ) -> None:
-#     await message.answer(text=i18n['catalog_answer'])
-#     for product in await orm_get_products(session):
-#         await message.answer_photo(
-#             product.image,
-#             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-#                     f'{i18n['price']}: {product.price:.2f} {i18n['currency']}',
-#             reply_markup=get_edit_product_keyboard(product, i18n)
-#         )
+@router.callback_query(CategoryCallbackFactory.filter())
+async def products_catalog_list(
+        query: CallbackQuery,
+        callback_data: CategoryCallbackFactory,
+        i18n: dict[str, str | Any],
+        session: AsyncSession
+) -> None:
+    await query.answer()
+    await query.message.answer(text=i18n['catalog_answer'])
+    for product in await orm_get_products(session, callback_data.category_id):
+        await query.message.answer_photo(
+            product.image,
+            caption=f'<strong>{product.name}</strong>\n{product.description}\n'
+                    f'{i18n['price']}: {product.price:.2f} {i18n['currency']}',
+            reply_markup=get_edit_product_keyboard(product, i18n)
+        )
 
 
 @router.callback_query(DeleteProductCallbackFactory.filter())
