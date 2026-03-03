@@ -88,11 +88,11 @@ RU: dict[str, str | Any] = {
 
     # InfoPages
     'main_name': 'Главная',
-    'about_name': 'О нас',
-    'payment_name': 'Оплата',
-    'shipping_name': 'Доставка',
-    'catalog_name': 'Каталог',
-    'cart_name': 'Корзина',
+    'about_name': 'О нас ℹ️',
+    'payment_name': 'Оплата 💰',
+    'shipping_name': 'Доставка ⛵',
+    'catalog_name': 'Товары 🍕',
+    'cart_name': 'Корзина 🛒',
     'choose_page_text': 'Выберите страницу, для которой редактируется изображение',
     'add_banner_image': 'Отправьте фото баннера.',
     'add_banner_success': 'Баннер добавлен/изменен.',

@@ -7,11 +7,16 @@ from aiogram.types import Message, BotCommandScopeChat
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from database.orm_query import orm_get_products
+from database.orm_query import (
+    orm_get_info_page,
+    orm_get_info_pages,
+    orm_get_products
+)
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
-from keyboards.main_menu import get_main_menu_commands
+
+from keyboards.inline_keyboards import main_menu_keyboard
 from keyboards.reply_keyboards import get_start_kb
 
 router = Router()
@@ -19,34 +24,33 @@ router.message.filter(ChatTypeFilter(['private']))
 
 
 @router.message(CommandStart())
-async def start_cmd(message: Message, bot: Bot, i18n: dict[str, str]):
-    # await bot.set_my_commands(
-    #     commands=get_main_menu_commands(i18n=i18n),
-    #     scope=BotCommandScopeChat(
-    #         type=BotCommandScopeType.CHAT,
-    #         chat_id=message.chat.id
-    #     )
-    # )
-    # await bot.delete_my_commands(scope=BotCommandScopeChat(
-    #     type=BotCommandScopeType.CHAT,
-    #     chat_id=message.chat.id
-    # ))
-    await message.answer(
-        text=i18n['/start'],
-        reply_markup=get_start_kb(i18n=i18n)
+async def start_cmd(
+        message: Message,
+        i18n: dict[str, str],
+        session: AsyncSession
+):
+    """Handles command `/start`"""
+
+    main_page = await orm_get_info_page(session, page_name='main')
+    pages = await orm_get_info_pages(session, exclude_name='main')
+
+    await message.answer_photo(
+        photo=main_page.image,
+        caption=i18n['main'],
+        reply_markup=main_menu_keyboard(i18n, pages)
     )
 
 
-@router.message(ReplyButtonsFilter('menu'))
-@router.message(or_f(Command('menu'), F.text.lower().contains('меню')))
-async def menu_cmd(message: Message, i18n: dict[str, Any], session: AsyncSession):
-    await message.answer(text=i18n['/menu'])
-    for product in await orm_get_products(session):
-        await message.answer_photo(
-            product.image,
-            caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-                    f'{i18n['price']}: {product.price:.2f} {i18n['currency']}'
-        )
+# @router.message(ReplyButtonsFilter('menu'))
+# @router.message(or_f(Command('menu'), F.text.lower().contains('меню')))
+# async def menu_cmd(message: Message, i18n: dict[str, Any], session: AsyncSession):
+#     await message.answer(text=i18n['/menu'])
+#     for product in await orm_get_products(session):
+#         await message.answer_photo(
+#             product.image,
+#             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
+#                     f'{i18n['price']}: {product.price:.2f} {i18n['currency']}'
+#         )
 
 
 @router.message(or_f(Command('about'), ReplyButtonsFilter('about')))

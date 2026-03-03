@@ -37,8 +37,16 @@ async def orm_get_info_page(session: AsyncSession, page_name: str) -> InfoPage:
     return result.scalars().first()
 
 
-async def orm_get_info_pages(session: AsyncSession) -> Sequence[InfoPage]:
-    query = select(InfoPage)
+async def orm_get_info_pages(
+        session: AsyncSession,
+        exclude_name: str | None = None
+) -> Sequence[InfoPage]:
+
+    if exclude_name:
+        query = select(InfoPage).where(InfoPage.name != exclude_name)
+    else:
+        query = select(InfoPage)
+
     result = await session.execute(query)
     return result.scalars().all()
 
