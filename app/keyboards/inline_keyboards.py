@@ -96,14 +96,25 @@ def catalog_page_keyboard(
 ) -> InlineKeyboardMarkup:
     """Categories page keyboard."""
 
-    categories_buttons = {
-        i18n[cat.name]: CategoryCallbackFactory(category_id=cat.id).pack()
+    categories_buttons = [
+        InlineKeyboardButton(
+            text=i18n[cat.name],
+            callback_data=CategoryCallbackFactory(category_id=cat.id).pack()
+        )
         for cat in categories
-    }
+    ]
     buttons = {
         i18n['btn_back']: PageCallbackFactory(name='main').pack(),
         i18n['cart_name']: PageCallbackFactory(name='cart').pack(),
     }
-    buttons.update(categories_buttons)
 
-    return inline_keyboard_factory(buttons=buttons, sizes=(2, 2))
+    builder = InlineKeyboardBuilder()
+    builder.attach(
+        InlineKeyboardBuilder.from_markup(inline_keyboard_factory(
+            buttons=buttons,
+            sizes=(2, 2))
+        )
+    )
+    builder.row(*categories_buttons, width=2)
+
+    return builder.as_markup()
