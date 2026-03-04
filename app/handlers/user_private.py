@@ -40,6 +40,23 @@ async def start_cmd(
     )
 
 
+@router.callback_query(PageCallbackFactory.filter(F.name == 'main'))
+async def process_main_page(
+        query: CallbackQuery,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles `main` page query by button."""
+
+    await query.answer()
+    main_page = await orm_get_info_page(session, page_name='main')
+
+    await query.message.edit_media(
+        media=InputMediaPhoto(media=main_page.image, caption=i18n['main']),
+        reply_markup=main_menu_keyboard(i18n)
+    )
+
+
 @router.callback_query(PageCallbackFactory.filter(F.name == 'catalog'))
 async def process_catalog_page(
         query: CallbackQuery,
