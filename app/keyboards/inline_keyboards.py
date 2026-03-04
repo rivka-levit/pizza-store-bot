@@ -4,8 +4,6 @@ from typing import Any
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-from sqlalchemy.ext.asyncio import AsyncSession
-
 from callbacks import (
     DeleteProductCallbackFactory,
     EditProductCallbackFactory,
@@ -14,7 +12,6 @@ from callbacks import (
 )
 
 from database.models import Product, Category, InfoPage
-from database.orm_query import orm_get_info_page
 
 
 def inline_keyboard_factory(
@@ -74,45 +71,39 @@ def page_choice_keyboard(
     buttons = dict()
 
     for page in pages:
-        buttons[i18n[f'{page.name}_name']] = PageCallbackFactory(
-            id=page.id,
-            name=page.name
-        ).pack()
+        buttons[i18n[f'{page.name}_name']] = PageCallbackFactory(name=page.name).pack()
 
     return inline_keyboard_factory(buttons=buttons, sizes=(3,))
 
 
-def main_menu_keyboard(
-        i18n: dict[str, Any],
-        pages: Sequence[InfoPage]
-) -> InlineKeyboardMarkup:
+def main_menu_keyboard(i18n: dict[str, Any]) -> InlineKeyboardMarkup:
     """Main page keyboard."""
 
-    page_data: dict[str, int] = dict()
-    for page in pages:
-        page_data[page.name] = page.id
-
     buttons = {
-        i18n['catalog_name'] : PageCallbackFactory(
-            id=page_data['catalog'],
-            name='catalog'
-        ).pack(),
-        i18n['cart_name']: PageCallbackFactory(
-            id=page_data['cart'],
-            name='cart'
-        ).pack(),
-        i18n['about_name']: PageCallbackFactory(
-            id=page_data['about'],
-            name='about'
-        ).pack(),
-        i18n['payment_name']: PageCallbackFactory(
-            id=page_data['payment'],
-            name='payment'
-        ).pack(),
-        i18n['shipping_name']: PageCallbackFactory(
-            id=page_data['shipping'],
-            name='shipping'
-        ).pack()
+        i18n['catalog_name']: PageCallbackFactory(name='catalog').pack(),
+        i18n['cart_name']: PageCallbackFactory(name='cart').pack(),
+        i18n['about_name']: PageCallbackFactory(name='about').pack(),
+        i18n['payment_name']: PageCallbackFactory(name='payment').pack(),
+        i18n['shipping_name']: PageCallbackFactory(name='shipping').pack()
     }
 
     return inline_keyboard_factory(buttons=buttons, sizes=(2, 2, 1))
+
+
+def catalog_page_keyboard(
+        i18n: dict[str, Any],
+        categories: Sequence[Category]
+) -> InlineKeyboardMarkup:
+    """Categories page keyboard."""
+
+    categories_buttons = {
+        i18n[cat.name]: CategoryCallbackFactory(category_id=cat.id).pack()
+        for cat in categories
+    }
+    buttons = {
+        i18n['btn_back']: PageCallbackFactory(name='main').pack(),
+        i18n['cart_name']: PageCallbackFactory(name='cart').pack(),
+    }
+    buttons.update(categories_buttons)
+
+    return inline_keyboard_factory(buttons=buttons, sizes=(2, 2))

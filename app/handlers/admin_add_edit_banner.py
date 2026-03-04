@@ -50,10 +50,10 @@ async def add_edit_banner(
             i18n=i18n
         ),
     )
-    await state.set_state(AddBanner.page_id)
+    await state.set_state(AddBanner.page_name)
 
 
-@router.callback_query(StateFilter(AddBanner.page_id), PageCallbackFactory.filter())
+@router.callback_query(StateFilter(AddBanner.page_name), PageCallbackFactory.filter())
 async def choose_page_step(
         query: CallbackQuery,
         callback_data: PageCallbackFactory,
@@ -63,12 +63,12 @@ async def choose_page_step(
     """Handles choice page button has been clicked."""
 
     await query.answer()
-    await state.update_data(page_id=callback_data.id)
+    await state.update_data(page_name=callback_data.name)
     await state.set_state(AddBanner.image)
     await query.message.edit_text(text=i18n['add_banner_image'])
 
 
-@router.message(StateFilter(AddBanner.page_id))
+@router.message(StateFilter(AddBanner.page_name))
 async def wrong_page_data(message: Message, i18n: dict[str, Any]):
     """Handles wrong message on page choice step."""
 
@@ -87,9 +87,9 @@ async def add_banner_image_step(
 
     image_id = message.photo[-1].file_id
     data = await state.get_data()
-    page_id = data['page_id']
+    page_name = data['page_name']
 
-    await orm_change_page_image(session, page_id, image_id)
+    await orm_change_page_image(session, page_name, image_id)
     await message.answer(text=i18n['add_banner_success'])
     await state.clear()
 

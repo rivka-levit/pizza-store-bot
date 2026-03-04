@@ -1,23 +1,23 @@
 from typing import Any
 
-from aiogram import Bot, F, Router
-from aiogram.enums import BotCommandScopeType
+from aiogram import F, Router
 from aiogram.filters import Command, CommandStart, or_f
-from aiogram.types import Message, BotCommandScopeChat
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from callbacks import PageCallbackFactory
+
 from database.orm_query import (
+    orm_get_categories,
     orm_get_info_page,
-    orm_get_info_pages,
     orm_get_products
 )
 
 from filters.chat_types import ChatTypeFilter
 from filters.reply_buttons import ReplyButtonsFilter
 
-from keyboards.inline_keyboards import main_menu_keyboard
-from keyboards.reply_keyboards import get_start_kb
+from keyboards.inline_keyboards import catalog_page_keyboard, main_menu_keyboard
 
 router = Router()
 router.message.filter(ChatTypeFilter(['private']))
@@ -32,12 +32,30 @@ async def start_cmd(
     """Handles command `/start`"""
 
     main_page = await orm_get_info_page(session, page_name='main')
-    pages = await orm_get_info_pages(session, exclude_name='main')
 
     await message.answer_photo(
         photo=main_page.image,
         caption=i18n['main'],
-        reply_markup=main_menu_keyboard(i18n, pages)
+        reply_markup=main_menu_keyboard(i18n)
+    )
+
+
+@router.callback_query(PageCallbackFactory.filter(F.name == 'catalog'))
+async def process_catalog_page(
+        query: CallbackQuery,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles `catalog` button to retrieve catalog page."""
+
+    await query.answer()
+
+    catalog_page = await orm_get_info_page(session, page_name='catalog')
+    categories = await orm_get_categories(session)
+
+    await query.message.edit_media(
+        media=InputMediaPhoto(media=catalog_page.image, caption=i18n['catalog']),
+        reply_markup=catalog_page_keyboard(i18n, categories)
     )
 
 

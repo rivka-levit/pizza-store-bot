@@ -31,7 +31,7 @@ RU: dict[str, str | Any] = {
         ),
         sep='\n------------------\n'
     ).as_html(),
-    'catalog': 'Категории: ',
+    'catalog': 'Категории:',
     'cart': 'В корзине пока нет товаров',
     '/cancel': 'Действия отменены',
     '/back': 'Oк, вы вернулись к прошлому шагу',
@@ -49,6 +49,7 @@ RU: dict[str, str | Any] = {
     'btn_payment': 'Оплата',
     'btn_shipping': 'Доставка',
     'input_field_placeholder': 'Что Вас интересует?',
+    'btn_back': 'Назад',
     'btn_add_item': 'Добавить товар',
     'btn_catalog': 'Ассортимент',
     'btn_add_edit_banner': 'Добавить/Изменить баннер',

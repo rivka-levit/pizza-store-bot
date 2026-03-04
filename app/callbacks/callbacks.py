@@ -16,5 +16,4 @@ class CategoryCallbackFactory(CallbackData, prefix='cat'):
 
 
 class PageCallbackFactory(CallbackData, prefix='page'):
-    id: int
     name: str

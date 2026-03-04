@@ -23,10 +23,10 @@ async def orm_add_info_pages(session: AsyncSession, pages: list[str]) -> None:
 
 async def orm_change_page_image(
         session: AsyncSession,
-        page_id: str,
+        page_name: str,
         image: str
 ) -> None:
-    query = update(InfoPage).where(InfoPage.id == page_id).values(image=image)
+    query = update(InfoPage).where(InfoPage.name == page_name).values(image=image)
     await session.execute(query)
     await session.commit()
 

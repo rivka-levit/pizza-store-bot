@@ -22,5 +22,5 @@ class EditItem(StatesGroup):
 
 
 class AddBanner(StatesGroup):
-    page_id = State()
+    page_name = State()
     image = State()
