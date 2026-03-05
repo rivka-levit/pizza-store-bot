@@ -5,10 +5,12 @@ from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callbacks import (
+    AddProductToCartCallback,
     DeleteProductCallbackFactory,
     EditProductCallbackFactory,
     CategoryCallbackFactory,
-    PageCallbackFactory
+    PageCallbackFactory,
+    PaginationCallbackFactory
 )
 
 from database.models import Product, Category, InfoPage
@@ -28,6 +30,32 @@ def inline_keyboard_factory(
 
     return builder.adjust(*sizes).as_markup()
 
+
+def get_pages_buttons(
+        i18n: dict[str, Any],
+        prev_page: int | None = None,
+        next_page: int | None = None
+) -> list[InlineKeyboardButton]:
+    """List of buttons for pagination."""
+
+    pages_btn = list()
+
+    if prev_page:
+        pages_btn.append(InlineKeyboardButton(
+            text=i18n['btn_previous'],
+            callback_data=PaginationCallbackFactory(
+                page=prev_page,
+            ).pack()
+        ))
+    if next_page:
+        pages_btn.append(InlineKeyboardButton(
+            text=i18n['btn_next'],
+            callback_data=PaginationCallbackFactory(
+                page=next_page,
+            ).pack()
+        ))
+
+    return pages_btn
 
 
 def get_edit_product_keyboard(
@@ -116,5 +144,47 @@ def catalog_page_keyboard(
         )
     )
     builder.row(*categories_buttons, width=2)
+
+    return builder.as_markup()
+
+
+def product_list_keyboard(
+        i18n: dict[str, Any],
+        product: Product,
+        user_id: int,
+        prev_page: int | None = None,
+        next_page: int | None = None
+) -> InlineKeyboardMarkup:
+    """Product list keyboard."""
+
+    first_row_buttons = [
+        InlineKeyboardButton(
+            text=i18n['btn_back'],
+            callback_data=PageCallbackFactory(name='catalog').pack()
+        ),
+        InlineKeyboardButton(
+            text=i18n['cart_name'],
+            callback_data=PageCallbackFactory(name='cart').pack()
+        ),
+    ]
+
+    buy_btn = InlineKeyboardButton(
+        text=i18n['btn_buy'],
+        callback_data=AddProductToCartCallback(
+            product_id=product.id,
+            user_id=user_id
+        ).pack()
+    )
+
+    pagination_buttons = get_pages_buttons(
+        i18n,
+        prev_page=prev_page,
+        next_page=next_page
+    )
+
+    builder = InlineKeyboardBuilder()
+    builder.row(*first_row_buttons[:2], width=2)
+    builder.row(buy_btn)
+    builder.row(*pagination_buttons, width=2)
 
     return builder.as_markup()

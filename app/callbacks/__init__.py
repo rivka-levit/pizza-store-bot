@@ -1,6 +1,8 @@
 from .callbacks import (
+    AddProductToCartCallback,
     DeleteProductCallbackFactory,
     EditProductCallbackFactory,
     CategoryCallbackFactory,
-    PageCallbackFactory
+    PageCallbackFactory,
+    PaginationCallbackFactory
 )
