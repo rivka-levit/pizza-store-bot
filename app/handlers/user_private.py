@@ -114,16 +114,19 @@ async def process_products_list(
     next_page = page + 1 if paginator.has_next() else None
 
     await query.message.edit_media(
-        media=InputMediaPhoto(media=product.image),
-        caption=f'<strong>{product.name}</strong>\n'
-                f'{product.description}\n'
-                f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'
-                f'<strong>{i18n['item_word']} {paginator.page} '
-                f'{i18n['from_word']} {paginator.total_pages}</strong>',
+        media=InputMediaPhoto(
+            media=product.image,
+            caption = f'<strong>{product.name}</strong>\n'
+                      f'{product.description}\n'
+                      f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'
+                      f'<strong>{i18n['item_word']} {paginator.page} '
+                      f'{i18n['from_word']} {paginator.total_pages}</strong>',
+            ),
         reply_markup=product_list_keyboard(
-            i18n,
-            product,
-            user_id,
+            i18n=i18n,
+            category_id=callback_data.category_id,
+            product=product,
+            user_id=user_id,
             prev_page=prev_page,
             next_page=next_page
         )

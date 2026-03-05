@@ -80,7 +80,7 @@ async def products_catalog_category_choice(
     )
 
 
-@router.callback_query(CategoryCallbackFactory.filter())
+@router.callback_query(CategoryCallbackFactory.filter(), IsAdmin())
 async def products_catalog_list(
         query: CallbackQuery,
         callback_data: CategoryCallbackFactory,

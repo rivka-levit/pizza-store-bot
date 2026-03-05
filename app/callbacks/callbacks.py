@@ -28,3 +28,4 @@ class PageCallbackFactory(CallbackData, prefix='page'):
 
 class PaginationCallbackFactory(CallbackData, prefix='pagination'):
     page: int
+    category_id: int

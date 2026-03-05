@@ -33,6 +33,7 @@ def inline_keyboard_factory(
 
 def get_pages_buttons(
         i18n: dict[str, Any],
+        category_id: int,
         prev_page: int | None = None,
         next_page: int | None = None
 ) -> list[InlineKeyboardButton]:
@@ -45,6 +46,7 @@ def get_pages_buttons(
             text=i18n['btn_previous'],
             callback_data=PaginationCallbackFactory(
                 page=prev_page,
+                category_id=category_id
             ).pack()
         ))
     if next_page:
@@ -52,6 +54,7 @@ def get_pages_buttons(
             text=i18n['btn_next'],
             callback_data=PaginationCallbackFactory(
                 page=next_page,
+                category_id=category_id
             ).pack()
         ))
 
@@ -150,6 +153,7 @@ def catalog_page_keyboard(
 
 def product_list_keyboard(
         i18n: dict[str, Any],
+        category_id: int,
         product: Product,
         user_id: int,
         prev_page: int | None = None,
@@ -178,6 +182,7 @@ def product_list_keyboard(
 
     pagination_buttons = get_pages_buttons(
         i18n,
+        category_id=category_id,
         prev_page=prev_page,
         next_page=next_page
     )
