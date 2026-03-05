@@ -5,7 +5,7 @@ from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import Mapped
 
-from database.models import Product, InfoPage, Category, User
+from database.models import Product, InfoPage, Category, Cart, User
 
 
 # ===================== Banners (info pages) ============================
@@ -152,3 +152,25 @@ async def orm_add_user(
             phone=phone
         ))
         await session.commit()
+
+# ========================== Carts ================================
+
+async def orm_add_to_cart(
+        session: AsyncSession,
+        user_id: int,
+        product_id: int
+) -> Cart | None:
+    """Add product to cart or add quantity of the product if exists."""
+
+    query = select(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id)
+    result = await session.execute(query)
+    cart: Cart | None = result.scalars().one_or_none()
+
+    if cart:
+        cart.quantity += 1
+        await session.commit()
+        return cart
+    else:
+        session.add(Cart(user_id=user_id, product_id=product_id, quantity=1))
+        await session.commit()
+        return None

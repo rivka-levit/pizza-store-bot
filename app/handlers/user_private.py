@@ -7,6 +7,7 @@ from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from callbacks import (
+    AddProductToCartCallback,
     CategoryCallbackFactory,
     PageCallbackFactory,
     PaginationCallbackFactory
@@ -48,6 +49,19 @@ async def start_cmd(
         caption=i18n['main'],
         reply_markup=main_menu_keyboard(i18n)
     )
+
+
+@router.callback_query(AddProductToCartCallback.filter())
+async def add_product_to_cart(
+        query: CallbackQuery,
+        callback_data: AddProductToCartCallback,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles adding product to cart."""
+
+    await query.answer()
+
 
 
 @router.callback_query(PageCallbackFactory.filter(F.name == 'main'))
@@ -116,11 +130,11 @@ async def process_products_list(
     await query.message.edit_media(
         media=InputMediaPhoto(
             media=product.image,
-            caption = f'<strong>{product.name}</strong>\n'
-                      f'{product.description}\n'
-                      f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'
-                      f'<strong>{i18n['item_word']} {paginator.page} '
-                      f'{i18n['from_word']} {paginator.total_pages}</strong>',
+            caption=f'<strong>{product.name}</strong>\n'
+                    f'{product.description}\n'
+                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'
+                    f'<strong>{i18n['item_word']} {paginator.page} '
+                    f'{i18n['from_word']} {paginator.total_pages}</strong>',
             ),
         reply_markup=product_list_keyboard(
             i18n=i18n,
