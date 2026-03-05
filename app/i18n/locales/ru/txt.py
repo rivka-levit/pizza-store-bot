@@ -102,4 +102,7 @@ RU: dict[str, str | Any] = {
     'choose_page_text': 'Выберите страницу, для которой редактируется изображение',
     'add_banner_image': 'Отправьте фото баннера.',
     'add_banner_success': 'Баннер добавлен/изменен.',
+
+    # Cart operations
+    'add_to_cart_success': 'Товар добавлен в корзину.',
 }

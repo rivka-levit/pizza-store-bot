@@ -14,6 +14,7 @@ from callbacks import (
 )
 
 from database.orm_query import (
+    orm_add_to_cart,
     orm_get_categories,
     orm_get_info_page,
     orm_get_products
@@ -60,8 +61,12 @@ async def add_product_to_cart(
 ):
     """Handles adding product to cart."""
 
-    await query.answer()
-
+    await orm_add_to_cart(
+        session,
+        callback_data.user_id,
+        callback_data.product_id
+    )
+    await query.answer(i18n['add_to_cart_success'], show_alert=True)
 
 
 @router.callback_query(PageCallbackFactory.filter(F.name == 'main'))
