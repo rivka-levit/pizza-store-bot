@@ -197,3 +197,26 @@ async def orm_delete_from_cart(
     query = delete(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id)
     await session.execute(query)
     await session.commit()
+
+
+async def orm_decrease_quantity_in_cart(
+        session: AsyncSession,
+        user_id: int,
+        product_id: int
+) -> bool | None:
+    """Decrease product quantity in cart."""
+
+    query = select(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id)
+    result = await session.execute(query)
+    cart: Cart | None = result.scalars().one_or_none()
+
+    if not cart:
+        return None
+
+    if cart.quantity > 1:
+        cart.quantity -= 1
+        await session.commit()
+        return True
+    else:
+        await orm_delete_from_cart(session, user_id, product_id)
+        return False
