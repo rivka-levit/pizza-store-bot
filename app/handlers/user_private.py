@@ -125,7 +125,7 @@ async def process_catalog_page(
 
 @router.callback_query(or_f(
     CategoryCallbackFactory.filter(),
-    PaginationCallbackFactory.filter()
+    PaginationCallbackFactory.filter(F.list_name=='products')
 ))
 async def process_products_list(
         query: CallbackQuery,
@@ -152,10 +152,10 @@ async def process_products_list(
 
     await query.message.edit_media(
         media=InputMediaPhoto(
-            media=product.image,
+            media=product.image,  # noqa
             caption=f'<strong>{product.name}</strong>\n'
                     f'{product.description}\n'
-                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'
+                    f'{i18n['price']}: {round(product.price, 2)} {i18n['currency']}\n'  # noqa
                     f'<strong>{i18n['item_word']} {paginator.page} '
                     f'{i18n['from_word']} {paginator.total_pages}</strong>',
             ),
@@ -173,7 +173,7 @@ async def process_products_list(
 @router.callback_query(or_f(
     PageCallbackFactory.filter(F.name == 'cart'),
     CartManagingCallback.filter(),
-    PaginationCallbackFactory.filter()
+    PaginationCallbackFactory.filter(F.list_name=='carts')
 ))
 async def process_cart_page(
         query: CallbackQuery,
@@ -234,22 +234,23 @@ async def process_cart_page(
         next_page = page + 1 if paginator.has_next() else None
 
         cart = paginator.array[page-1]
-        cart_price = round(cart.quantity * cart.product.price, 2)
+        cart_price = round(cart.quantity * cart.product.price, 2)  # noqa
         total_price = round(sum(crt.quantity * crt.product.price for crt in carts), 2)
 
         await query.message.edit_media(
             media=InputMediaPhoto(
-                media=cart.product.image,
-                caption=f'<strong>{cart.product.name}</strong>\n'
-                        f'{cart.product.price}{i18n['currency']} x '
+                media=cart.product.image,  # noqa
+                caption=f'<strong>{cart.product.name}</strong>\n'  # noqa
+                        f'{cart.product.price}{i18n['currency']} x '  # noqa
                         f'{cart.quantity} = {cart_price}{i18n['currency']}\n'
                         f'{i18n['item_word']} {paginator.page} {i18n['from_word']} '
                         f'{paginator.total_pages} {i18n['in_cart']}\n'
-                        f'{i18n['total_to_pay']} {total_price}',
+                        f'{i18n['total_to_pay']} <strong>{total_price}'
+                        f'{i18n['currency']}</strong>',
             ),
             reply_markup=cart_list_keyboard(
                     i18n,
-                    cart.product.category_id,
+                    cart.product.category_id,  # noqa
                     cart.product,
                     user_id,
                     prev_page,

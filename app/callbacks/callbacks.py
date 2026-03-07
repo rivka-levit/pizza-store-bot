@@ -1,6 +1,6 @@
 from aiogram.filters.callback_data import CallbackData
 
-from utils.pagination import Paginator
+from sqlalchemy.orm import Mapped
 
 
 class AddProductToCartCallback(CallbackData, prefix='cart_add'):
@@ -11,7 +11,7 @@ class AddProductToCartCallback(CallbackData, prefix='cart_add'):
 class CartManagingCallback(CallbackData, prefix='cart'):
     action: str
     user_id: int
-    product_id: int
+    product_id: int | Mapped[int]
 
 
 class CategoryCallbackFactory(CallbackData, prefix='cat'):
@@ -35,3 +35,4 @@ class PageCallbackFactory(CallbackData, prefix='page'):
 class PaginationCallbackFactory(CallbackData, prefix='pagination'):
     page: int
     category_id: int
+    list_name: str

@@ -4,6 +4,8 @@ from typing import Any
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
+from sqlalchemy.orm import Mapped
+
 from callbacks import (
     AddProductToCartCallback,
     CartManagingCallback,
@@ -35,6 +37,7 @@ def inline_keyboard_factory(
 def get_pages_buttons(
         i18n: dict[str, Any],
         category_id: int,
+        list_name: str,
         prev_page: int | None = None,
         next_page: int | None = None
 ) -> list[InlineKeyboardButton]:
@@ -47,7 +50,8 @@ def get_pages_buttons(
             text=i18n['btn_previous'],
             callback_data=PaginationCallbackFactory(
                 page=prev_page,
-                category_id=category_id
+                category_id=category_id,
+                list_name=list_name
             ).pack()
         ))
     if next_page:
@@ -55,7 +59,8 @@ def get_pages_buttons(
             text=i18n['btn_next'],
             callback_data=PaginationCallbackFactory(
                 page=next_page,
-                category_id=category_id
+                category_id=category_id,
+                list_name=list_name
             ).pack()
         ))
 
@@ -184,6 +189,7 @@ def product_list_keyboard(
     pagination_buttons = get_pages_buttons(
         i18n,
         category_id=category_id,
+        list_name='products',
         prev_page=prev_page,
         next_page=next_page
     )
@@ -202,7 +208,7 @@ def empty_cart_keyboard(
     """Keyboard for empty cart page."""
 
     buttons = {
-        i18n['btn_back']: PageCallbackFactory(name='catalog').pack(),
+        i18n['catalog_name']: PageCallbackFactory(name='catalog').pack(),
         i18n['btn_to_main']: PageCallbackFactory(name='main').pack(),
     }
     return inline_keyboard_factory(buttons=buttons, sizes=(2,))
@@ -211,7 +217,7 @@ def empty_cart_keyboard(
 def cart_list_keyboard(
         i18n: dict[str, Any],
         category_id: int,
-        product: Product,
+        product: Product | Mapped[Product],
         user_id: int,
         prev_page: int | None = None,
         next_page: int | None = None
@@ -250,6 +256,7 @@ def cart_list_keyboard(
         *get_pages_buttons(
             i18n,
             category_id=category_id,
+            list_name='carts',
             prev_page=prev_page,
             next_page=next_page
         ),
