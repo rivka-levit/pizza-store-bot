@@ -16,6 +16,7 @@ from callbacks import (
 
 from database.orm_query import (
     orm_add_to_cart,
+    orm_add_user,
     orm_delete_from_cart,
     orm_decrease_quantity_in_cart,
     orm_get_user_carts,
@@ -48,6 +49,17 @@ async def start_cmd(
         session: AsyncSession
 ):
     """Handles command `/start`"""
+
+    user_id = message.from_user.id
+    first_name = message.from_user.first_name if message.from_user.first_name else None
+    last_name = message.from_user.last_name if message.from_user.last_name else None
+
+    await orm_add_user(
+        session=session,
+        tg_user_id=user_id,
+        first_name=first_name,
+        last_name=last_name
+    )
 
     main_page = await orm_get_info_page(session, page_name='main')
 
