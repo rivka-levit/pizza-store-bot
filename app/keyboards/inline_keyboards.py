@@ -196,6 +196,18 @@ def product_list_keyboard(
     return builder.as_markup()
 
 
+def empty_cart_keyboard(
+        i18n: dict[str, Any],
+):
+    """Keyboard for empty cart page."""
+
+    buttons = {
+        i18n['btn_back']: PageCallbackFactory(name='catalog').pack(),
+        i18n['btn_to_main']: PageCallbackFactory(name='main').pack(),
+    }
+    return inline_keyboard_factory(buttons=buttons, sizes=(2,))
+
+
 def cart_list_keyboard(
         i18n: dict[str, Any],
         category_id: int,

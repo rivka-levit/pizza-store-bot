@@ -69,6 +69,7 @@ RU: dict[str, str | Any] = {
     'currency': 'р.',
     'item_word': 'Товар',
     'from_word': 'из',
+
     'btn_edit_product': 'Редактировать',
     'btn_delete_product': 'Удалить',
     'product_not_exists': 'Товара нет в базе данных',
@@ -109,4 +110,6 @@ RU: dict[str, str | Any] = {
     'add_to_cart_success': 'Товар добавлен в корзину.',
     'increase': '+1',
     'decrease': '-1',
+    'in_cart': 'в корзине',
+    'total_to_pay': 'Общая стоимость товаров в корзине',
 }
