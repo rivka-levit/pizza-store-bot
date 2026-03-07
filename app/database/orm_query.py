@@ -3,7 +3,7 @@ from typing import Any
 
 from sqlalchemy import delete, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, joinedload
 
 from database.models import Product, InfoPage, Category, Cart, User
 
@@ -174,3 +174,14 @@ async def orm_add_to_cart(
         session.add(Cart(user_id=user_id, product_id=product_id, quantity=1))
         await session.commit()
         return None
+
+
+async def orm_get_user_carts(
+        session: AsyncSession,
+        user_id: int
+) -> Sequence[Cart]:
+    """Get all the carts of particular user."""
+
+    query = select(Cart).where(Cart.user_id == user_id).options(joinedload(Cart.product))
+    result = await session.execute(query)
+    return result.scalars().all()
