@@ -185,3 +185,15 @@ async def orm_get_user_carts(
     query = select(Cart).where(Cart.user_id == user_id).options(joinedload(Cart.product))
     result = await session.execute(query)
     return result.scalars().all()
+
+
+async def orm_delete_from_cart(
+        session: AsyncSession,
+        user_id: int,
+        product_id: int
+) -> None:
+    """Delete product from cart."""
+
+    query = delete(Cart).where(Cart.user_id == user_id, Cart.product_id == product_id)
+    await session.execute(query)
+    await session.commit()
