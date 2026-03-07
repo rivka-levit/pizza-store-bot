@@ -48,6 +48,8 @@ RU: dict[str, str | Any] = {
     'btn_about': 'О магазине',
     'btn_payment': 'Оплата',
     'btn_shipping': 'Доставка',
+    'btn_to_main': 'На главную 🏠',
+    'btn_order': 'Заказать',
     'input_field_placeholder': 'Что Вас интересует?',
     'btn_back': 'Назад',
     'btn_previous': '◀ Пред.',
@@ -105,4 +107,6 @@ RU: dict[str, str | Any] = {
 
     # Cart operations
     'add_to_cart_success': 'Товар добавлен в корзину.',
+    'increase': '+1',
+    'decrease': '-1',
 }

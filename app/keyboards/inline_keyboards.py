@@ -6,6 +6,7 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 
 from callbacks import (
     AddProductToCartCallback,
+    CartManagingCallback,
     DeleteProductCallbackFactory,
     EditProductCallbackFactory,
     CategoryCallbackFactory,
@@ -13,7 +14,7 @@ from callbacks import (
     PaginationCallbackFactory
 )
 
-from database.models import Product, Category, InfoPage
+from database.models import Category, InfoPage, Product
 
 
 def inline_keyboard_factory(
@@ -191,5 +192,67 @@ def product_list_keyboard(
     builder.row(*first_row_buttons[:2], width=2)
     builder.row(buy_btn)
     builder.row(*pagination_buttons, width=2)
+
+    return builder.as_markup()
+
+
+def cart_list_keyboard(
+        i18n: dict[str, Any],
+        category_id: int,
+        product: Product,
+        user_id: int,
+        prev_page: int | None = None,
+        next_page: int | None = None
+):
+    """Cart list keyboard."""
+
+    builder = InlineKeyboardBuilder()
+    builder.row(
+        InlineKeyboardButton(
+            text=i18n['btn_delete_product'],
+            callback_data=CartManagingCallback(
+                action='delete',
+                user_id=user_id,
+                product_id=product.id
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text=i18n['decrease'],
+            callback_data=CartManagingCallback(
+                action='decrease',
+                user_id=user_id,
+                product_id=product.id
+            ).pack()
+        ),
+        InlineKeyboardButton(
+            text=i18n['increase'],
+            callback_data=CartManagingCallback(
+                action='increase',
+                user_id=user_id,
+                product_id=product.id
+            ).pack()
+        ),
+        width=3
+    )
+    builder.row(
+        *get_pages_buttons(
+            i18n,
+            category_id=category_id,
+            prev_page=prev_page,
+            next_page=next_page
+        ),
+        width=2
+    )
+    builder.row(
+        InlineKeyboardButton(
+            text=i18n['btn_to_main'],
+            callback_data=PageCallbackFactory(name='main').pack()
+        ),
+        InlineKeyboardButton(
+            text=i18n['btn_order'],
+            callback_data='order'
+        ),
+        width=2
+    )
 
     return builder.as_markup()

@@ -152,17 +152,6 @@ async def process_products_list(
     )
 
 
-# @router.message(ReplyButtonsFilter('menu'))
-# @router.message(or_f(Command('menu'), F.text.lower().contains('меню')))
-# async def menu_cmd(message: Message, i18n: dict[str, Any], session: AsyncSession):
-#     await message.answer(text=i18n['/menu'])
-#     for product in await orm_get_products(session):
-#         await message.answer_photo(
-#             product.image,
-#             caption=f'<strong>{product.name}</strong>\n{product.description}\n'
-#                     f'{i18n['price']}: {product.price:.2f} {i18n['currency']}'
-#         )
-
 
 @router.message(or_f(Command('about'), ReplyButtonsFilter('about')))
 async def about_cmd(message: Message, i18n: dict[str, str]):

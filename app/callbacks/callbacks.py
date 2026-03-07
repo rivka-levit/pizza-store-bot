@@ -8,9 +8,14 @@ class AddProductToCartCallback(CallbackData, prefix='cart_add'):
     user_id: int
 
 
-class EditProductCallbackFactory(CallbackData, prefix='edit'):
+class CartManagingCallback(CallbackData, prefix='cart'):
+    action: str
+    user_id: int
     product_id: int
-    product_name: str
+
+
+class CategoryCallbackFactory(CallbackData, prefix='cat'):
+    category_id: int
 
 
 class DeleteProductCallbackFactory(CallbackData, prefix='del'):
@@ -18,8 +23,9 @@ class DeleteProductCallbackFactory(CallbackData, prefix='del'):
     product_name: str
 
 
-class CategoryCallbackFactory(CallbackData, prefix='cat'):
-    category_id: int
+class EditProductCallbackFactory(CallbackData, prefix='edit'):
+    product_id: int
+    product_name: str
 
 
 class PageCallbackFactory(CallbackData, prefix='page'):
