@@ -189,10 +189,9 @@ async def process_cart_page(
         page = 1
 
     user_id = query.from_user.id
-    carts = await orm_get_user_carts(session, user_id)
     cart_page = await orm_get_info_page(session, page_name='cart')
 
-    if carts and callback_data.__prefix__ == 'cart':
+    if callback_data.__prefix__ == 'cart':
         if callback_data.action == 'delete':
             await orm_delete_from_cart(
                 session,
@@ -217,7 +216,8 @@ async def process_cart_page(
                 callback_data.user_id,
                 callback_data.product_id
             )
-        carts = await orm_get_user_carts(session, user_id)
+
+    carts = await orm_get_user_carts(session, user_id)
 
     if not carts:
         await query.message.edit_media(
@@ -296,15 +296,34 @@ async def payment_page(
     )
 
 
-@router.message(or_f(Command('payment'), ReplyButtonsFilter('payment')))
-async def payment_cmd(message: Message, i18n: dict[str, str]):
-    await message.answer(text=i18n['/payment'])
+@router.callback_query(PageCallbackFactory.filter(F.name=='shipping'))
+async def shipping_page(
+        query: CallbackQuery,
+        callback_data: PageCallbackFactory,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles `shipping` page button clicked."""
+
+    shipping_pg = await orm_get_info_page(session, callback_data.name)
+    await query.message.edit_media(
+        media=InputMediaPhoto(
+            media=shipping_pg.image,
+            caption=i18n['shipping']
+        ),
+        reply_markup=main_menu_keyboard(i18n)
+    )
 
 
-@router.message(
-    F.text.lower().regexp(r'.*варианты? доставки.*') |
-    F.text.lower().contains('доставк')
-)
-@router.message(or_f(Command('shipping'), ReplyButtonsFilter('shipping')))
-async def shipping_cmd(message: Message, i18n: dict[str, str]):
-    await message.answer(text=i18n['/shipping'])
+# @router.message(or_f(Command('payment'), ReplyButtonsFilter('payment')))
+# async def payment_cmd(message: Message, i18n: dict[str, str]):
+#     await message.answer(text=i18n['/payment'])
+#
+#
+# @router.message(
+#     F.text.lower().regexp(r'.*варианты? доставки.*') |
+#     F.text.lower().contains('доставк')
+# )
+# @router.message(or_f(Command('shipping'), ReplyButtonsFilter('shipping')))
+# async def shipping_cmd(message: Message, i18n: dict[str, str]):
+#     await message.answer(text=i18n['/shipping'])
