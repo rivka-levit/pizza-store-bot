@@ -1,7 +1,5 @@
 from aiogram.filters.callback_data import CallbackData
 
-from sqlalchemy.orm import Mapped
-
 
 class AddProductToCartCallback(CallbackData, prefix='cart_add'):
     product_id: int
@@ -11,7 +9,7 @@ class AddProductToCartCallback(CallbackData, prefix='cart_add'):
 class CartManagingCallback(CallbackData, prefix='cart'):
     action: str
     user_id: int
-    product_id: int | Mapped[int]
+    product_id: int
 
 
 class CategoryCallbackFactory(CallbackData, prefix='cat'):

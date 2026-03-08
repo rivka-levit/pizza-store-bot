@@ -231,7 +231,7 @@ def cart_list_keyboard(
             callback_data=CartManagingCallback(
                 action='delete',
                 user_id=user_id,
-                product_id=product.id
+                product_id=product.id  # noqa
             ).pack()
         ),
         InlineKeyboardButton(
@@ -239,7 +239,7 @@ def cart_list_keyboard(
             callback_data=CartManagingCallback(
                 action='decrease',
                 user_id=user_id,
-                product_id=product.id
+                product_id=product.id  # noqa
             ).pack()
         ),
         InlineKeyboardButton(
@@ -247,7 +247,7 @@ def cart_list_keyboard(
             callback_data=CartManagingCallback(
                 action='increase',
                 user_id=user_id,
-                product_id=product.id
+                product_id=product.id  # noqa
             ).pack()
         ),
         width=3

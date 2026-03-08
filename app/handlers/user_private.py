@@ -192,7 +192,6 @@ async def process_cart_page(
     carts = await orm_get_user_carts(session, user_id)
     cart_page = await orm_get_info_page(session, page_name='cart')
 
-
     if carts and callback_data.__prefix__ == 'cart':
         if callback_data.action == 'delete':
             await orm_delete_from_cart(
@@ -259,9 +258,23 @@ async def process_cart_page(
         )
 
 
-@router.message(or_f(Command('about'), ReplyButtonsFilter('about')))
-async def about_cmd(message: Message, i18n: dict[str, str]):
-    await message.answer(text=i18n['/about'])
+@router.callback_query(PageCallbackFactory.filter(F.name=='about'))
+async def about_page(
+        query: CallbackQuery,
+        callback_data: PageCallbackFactory,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles `about` page button clicked."""
+
+    about_pg = await orm_get_info_page(session, callback_data.name)
+    await query.message.edit_media(
+        media=InputMediaPhoto(
+            media=about_pg.image,
+            caption=i18n['about']
+        ),
+        reply_markup=main_menu_keyboard(i18n)
+    )
 
 
 @router.message(or_f(Command('payment'), ReplyButtonsFilter('payment')))
