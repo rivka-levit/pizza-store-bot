@@ -141,7 +141,7 @@ def catalog_page_keyboard(
         for cat in categories
     ]
     buttons = {
-        i18n['btn_back']: PageCallbackFactory(name='main').pack(),
+        i18n['btn_to_main']: PageCallbackFactory(name='main').pack(),
         i18n['cart_name']: PageCallbackFactory(name='cart').pack(),
     }
 

@@ -277,6 +277,25 @@ async def about_page(
     )
 
 
+@router.callback_query(PageCallbackFactory.filter(F.name=='payment'))
+async def payment_page(
+        query: CallbackQuery,
+        callback_data: PageCallbackFactory,
+        i18n: dict[str, Any],
+        session: AsyncSession
+):
+    """Handles `payment` page button clicked."""
+
+    payment_pg = await orm_get_info_page(session, callback_data.name)
+    await query.message.edit_media(
+        media=InputMediaPhoto(
+            media=payment_pg.image,
+            caption=i18n['payment']
+        ),
+        reply_markup=main_menu_keyboard(i18n)
+    )
+
+
 @router.message(or_f(Command('payment'), ReplyButtonsFilter('payment')))
 async def payment_cmd(message: Message, i18n: dict[str, str]):
     await message.answer(text=i18n['/payment'])
