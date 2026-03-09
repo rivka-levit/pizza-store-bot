@@ -1,7 +1,7 @@
 from typing import Any
 
 from aiogram import F, Router
-from aiogram.filters import Command, CommandStart, or_f
+from aiogram.filters import CommandStart, or_f
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,7 +26,6 @@ from database.orm_query import (
 )
 
 from filters.chat_types import ChatTypeFilter
-from filters.reply_buttons import ReplyButtonsFilter
 
 from keyboards.inline_keyboards import (
     cart_list_keyboard,
@@ -84,7 +83,7 @@ async def add_product_to_cart(
         callback_data.user_id,
         callback_data.product_id
     )
-    await query.answer(i18n['add_to_cart_success'], show_alert=True)
+    await query.answer(i18n['add_to_cart_success'])
 
 
 @router.callback_query(PageCallbackFactory.filter(F.name == 'main'))
@@ -145,7 +144,7 @@ async def process_products_list(
         page = 1
 
     paginator = Paginator(products, page=page)
-    product = paginator.array[page-1]
+    product = paginator.get_page()[0]
 
     prev_page = page - 1 if paginator.has_prev() else None
     next_page = page + 1 if paginator.has_next() else None
@@ -232,7 +231,7 @@ async def process_cart_page(
         prev_page = page - 1 if paginator.has_prev() else None
         next_page = page + 1 if paginator.has_next() else None
 
-        cart = paginator.array[page-1]
+        cart = paginator.get_page()[0]
         cart_price = round(cart.quantity * cart.product.price, 2)  # noqa
         total_price = round(sum(crt.quantity * crt.product.price for crt in carts), 2)
 
